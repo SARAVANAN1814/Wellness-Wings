@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -18,6 +19,7 @@ class _ElderlyRegistrationPageState extends State<ElderlyRegistrationPage> {
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
   String? _selectedGender;
+  bool _isPasswordVisible = false;
   bool _agreedToTerms = false;
   bool _isLoading = false;
   final _apiService = ApiService();
@@ -257,6 +259,7 @@ class _ElderlyRegistrationPageState extends State<ElderlyRegistrationPage> {
 
                 TextFormField(
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: 'Email',
                     labelStyle: TextStyle(color: Colors.grey[700]),
@@ -277,6 +280,9 @@ class _ElderlyRegistrationPageState extends State<ElderlyRegistrationPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
+                    if (!value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
                     return null;
                   },
                 ),
@@ -284,11 +290,22 @@ class _ElderlyRegistrationPageState extends State<ElderlyRegistrationPage> {
 
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     labelStyle: TextStyle(color: Colors.grey[700]),
                     prefixIcon: const Icon(Icons.lock_outline, color: Colors.teal),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -312,10 +329,17 @@ class _ElderlyRegistrationPageState extends State<ElderlyRegistrationPage> {
 
                 TextFormField(
                   controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
                     labelStyle: TextStyle(color: Colors.grey[700]),
                     prefixIcon: const Icon(Icons.phone_outlined, color: Colors.teal),
+                    prefixText: '+91 ',
+                    prefixStyle: const TextStyle(fontSize: 16, color: Colors.black87),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -331,6 +355,9 @@ class _ElderlyRegistrationPageState extends State<ElderlyRegistrationPage> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your phone number';
+                    }
+                    if (value.length != 10) {
+                      return 'Please enter exactly 10 digits';
                     }
                     return null;
                   },

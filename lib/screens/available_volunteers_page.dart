@@ -238,12 +238,12 @@ Thank you.''';
                       )
                     : GridView.builder(
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 0.85,
-                          crossAxisSpacing: 16,
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.60,
+                          crossAxisSpacing: 12,
                           mainAxisSpacing: 16,
                         ),
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         itemCount: _volunteers.length,
                         itemBuilder: (context, index) {
                           final volunteer = _volunteers[index];
@@ -381,7 +381,7 @@ Thank you.''';
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
-                                  const Spacer(),
+                                  const SizedBox(height: 12),
                                   Row(
                                     children: [
                                       Expanded(

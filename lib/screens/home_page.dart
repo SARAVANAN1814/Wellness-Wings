@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wellness_wings/services/api_service.dart';
+import 'dart:convert';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -141,62 +144,162 @@ class HomePage extends StatelessWidget {
                             ],
                           ),
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: ElevatedButton.icon(
-                                      icon: Icon(Icons.elderly, color: Colors.white),
-                                      label: const Text(
-                                        'Elderly Login',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.teal.shade800,
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
-                                        elevation: 2,
-                                      ),
-                                      onPressed: () {
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.elderly, color: Colors.white, size: 28),
+                                label: const Text(
+                                  'Elderly User Portal',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal.shade800,
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  final prefs = await SharedPreferences.getInstance();
+                                  final elderlyDetails = prefs.getString('elderly_details');
+                                  if (elderlyDetails != null) {
+                                    final data = jsonDecode(elderlyDetails);
+                                    
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (c) => const Center(child: CircularProgressIndicator()),
+                                    );
+                                    
+                                    try {
+                                      final api = ApiService();
+                                      final result = await api.checkElderlyStatus(data['id']);
+                                      
+                                      if (!context.mounted) return;
+                                      Navigator.pop(context); // dismiss loader
+                                      
+                                      if (result['success']) {
+                                        Navigator.pushNamed(context, '/elderly_purpose_selection');
+                                      } else {
+                                        await prefs.remove('elderly_details');
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Account no longer exists. Please register again.'), backgroundColor: Colors.red)
+                                        );
                                         Navigator.pushNamed(context, '/elderly_login');
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: ElevatedButton.icon(
-                                      icon: Icon(Icons.volunteer_activism, color: Colors.white),
-                                      label: const Text(
-                                        'Volunteer Login',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.teal.shade900,
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
-                                        elevation: 2,
-                                      ),
-                                      onPressed: () {
-                                        Navigator.pushNamed(context, '/volunteer_login');
-                                      },
-                                    ),
-                                  ),
-                                ],
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        Navigator.pop(context); // dismiss loader
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Server unreachable. Please try again later.'), backgroundColor: Colors.orange)
+                                        );
+                                      }
+                                    }
+                                  } else {
+                                    Navigator.pushNamed(context, '/elderly_login');
+                                  }
+                                },
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 12),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.volunteer_activism, color: Colors.white, size: 28),
+                                label: const Text(
+                                  'Volunteer Portal',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal.shade900,
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  final prefs = await SharedPreferences.getInstance();
+                                  final volunteerDetailsStr = prefs.getString('volunteer_details');
+                                  if (volunteerDetailsStr != null) {
+                                    final data = jsonDecode(volunteerDetailsStr);
+                                    
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (c) => const Center(child: CircularProgressIndicator()),
+                                    );
+                                    
+                                    try {
+                                      final api = ApiService();
+                                      final result = await api.checkVolunteerStatus(data['id'] ?? data['volunteer_id']);
+                                      
+                                      if (!context.mounted) return;
+                                      Navigator.pop(context); // dismiss loader
+                                      
+                                      if (result['success']) {
+                                        Navigator.pushNamed(
+                                          context, 
+                                          '/volunteer_availability',
+                                          arguments: result['user'] ?? result['volunteer'] ?? data,
+                                        );
+                                      } else {
+                                        await prefs.remove('volunteer_details');
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Profile no longer exists. Please register again.'), backgroundColor: Colors.red)
+                                        );
+                                        Navigator.pushNamed(context, '/volunteer_login');
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        Navigator.pop(context); // dismiss loader
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Connection failed. Please check server status.'), backgroundColor: Colors.orange)
+                                        );
+                                      }
+                                    }
+                                  } else {
+                                    Navigator.pushNamed(context, '/volunteer_login');
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.security, color: Colors.white, size: 28),
+                                label: const Text(
+                                  'Guardian Portal',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.indigo.shade800,
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/guardian_login');
+                                },
+                              ),
+                              const SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.lightbulb, size: 14, color: Colors.grey),
                                   const SizedBox(width: 4),
                                   const Text(
-                                    'Join us in making a difference',
+                                    'Select your role to continue',
                                     style: TextStyle(
                                       color: Colors.grey,
                                       fontStyle: FontStyle.italic,
@@ -204,6 +307,19 @@ class HomePage extends StatelessWidget {
                                     ),
                                   ),
                                 ],
+                              ),
+                              const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/admin_login');
+                                },
+                                child: Text(
+                                  'Admin Login',
+                                  style: TextStyle(
+                                    color: Colors.teal.shade700,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ],
                           ),

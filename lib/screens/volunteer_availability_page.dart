@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellness_wings/services/api_service.dart';
+import 'volunteer_edit_profile_page.dart';
 
 class ServiceType {
   final String name;
@@ -36,6 +39,7 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
   final _apiService = ApiService();
   bool _isLoading = false;
   bool _isAvailable = true;
+  late Map<String, dynamic> _volunteerData;
 
   final List<ServiceType> _services = [
     ServiceType(
@@ -82,13 +86,26 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
   @override
   void initState() {
     super.initState();
+    _volunteerData = widget.volunteerData;
     _loadCurrentSettings();
+  }
+
+  Future<void> _loadVolunteerDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    final volunteerDetailsStr = prefs.getString('volunteer_details');
+    if (volunteerDetailsStr != null) {
+      if (mounted) {
+        setState(() {
+          _volunteerData = jsonDecode(volunteerDetailsStr);
+        });
+      }
+    }
   }
 
   Future<void> _loadCurrentSettings() async {
     try {
       final settings = await _apiService.getVolunteerServices(
-        volunteerId: widget.volunteerData['volunteer_id'],
+        volunteerId: _volunteerData['volunteer_id'] ?? _volunteerData['id'], // use fallback id if volunteer_id is null
       );
       
       if (settings['success']) {
@@ -125,8 +142,8 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
     });
 
     try {
-      final volunteerId = widget.volunteerData['id']?.toString() ?? 
-                         widget.volunteerData['volunteer_id']?.toString();
+      final volunteerId = _volunteerData['id']?.toString() ?? 
+                         _volunteerData['volunteer_id']?.toString();
                        
       if (volunteerId == null) {
         throw Exception('Volunteer ID not found');
@@ -202,6 +219,103 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
         ),
         backgroundColor: Colors.teal.shade700,
         elevation: 0,
+        actions: [
+          Builder(
+            builder: (context) => Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: GestureDetector(
+                onTap: () => Scaffold.of(context).openEndDrawer(),
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.teal.shade50,
+                  backgroundImage: _volunteerData['profile_picture'] != null
+                      ? MemoryImage(base64Decode(_volunteerData['profile_picture']))
+                      : null,
+                  child: _volunteerData['profile_picture'] == null
+                      ? Icon(Icons.person, color: Colors.teal.shade700)
+                      : null,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Row(
+                children: [
+                  Text(
+                    _volunteerData['full_name'] ?? 'Volunteer Name',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  if (_volunteerData['has_experience'] == true) ...[
+                    const SizedBox(width: 6),
+                    const Icon(Icons.verified_rounded, color: Colors.white, size: 20),
+                  ],
+                ],
+              ),
+              accountEmail: Text(_volunteerData['email'] ?? 'No email provided'),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage: _volunteerData['profile_picture'] != null
+                    ? MemoryImage(base64Decode(_volunteerData['profile_picture']))
+                    : null,
+                child: _volunteerData['profile_picture'] == null
+                    ? Icon(Icons.person, size: 40, color: Colors.teal.shade700)
+                    : null,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.teal.shade700,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.phone_rounded, color: Colors.teal),
+              title: const Text('Phone Number', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: Text(_volunteerData['phone_number']?.toString() ?? 'Not provided'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.location_on_rounded, color: Colors.teal),
+              title: const Text('Location', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: Text('${_volunteerData['place'] ?? 'Unknown'}, ${_volunteerData['state'] ?? 'Unknown'}'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.currency_rupee_rounded, color: Colors.teal),
+              title: const Text('Price per Hour', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: Text('₹${_volunteerData['price_per_hour'] ?? '0'}/hr'),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.edit_rounded, color: Colors.teal),
+              title: const Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.w600)),
+              onTap: () async {
+                Navigator.pop(context); // Close drawer
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VolunteerEditProfilePage(volunteerData: _volunteerData),
+                  ),
+                );
+                if (result == true) {
+                  _loadVolunteerDetails(); 
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout_rounded, color: Colors.red),
+              title: const Text('Log Out', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('volunteer_details');
+                if (mounted) {
+                  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                }
+              },
+            ),
+          ],
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(

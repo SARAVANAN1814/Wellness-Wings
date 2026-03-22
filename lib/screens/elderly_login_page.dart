@@ -14,6 +14,7 @@ class _ElderlyLoginPageState extends State<ElderlyLoginPage> {
   final _passwordController = TextEditingController();
   final _apiService = ApiService();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -153,7 +154,7 @@ class _ElderlyLoginPageState extends State<ElderlyLoginPage> {
                       // Password Field
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText: _obscurePassword,
                         style: TextStyle(
                           color: Colors.teal.shade900,
                           fontWeight: FontWeight.w500,
@@ -173,6 +174,17 @@ class _ElderlyLoginPageState extends State<ElderlyLoginPage> {
                             borderSide: BorderSide(color: Colors.teal.shade700, width: 2),
                           ),
                           prefixIcon: Icon(Icons.lock_outline, color: Colors.teal.shade700),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.teal.shade700,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
                           filled: true,
                           fillColor: Colors.white,
                         ),

@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'available_volunteers_page.dart';
+import 'elderly_edit_profile_page.dart';
 
 class ElderlyPurposeSelectionPage extends StatefulWidget {
   const ElderlyPurposeSelectionPage({super.key});
@@ -10,6 +13,25 @@ class ElderlyPurposeSelectionPage extends StatefulWidget {
 
 class _ElderlyPurposeSelectionPageState extends State<ElderlyPurposeSelectionPage> {
   final _descriptionController = TextEditingController();
+  Map<String, dynamic>? _elderlyDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadElderlyDetails();
+  }
+
+  Future<void> _loadElderlyDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    final elderlyDetailsStr = prefs.getString('elderly_details');
+    if (elderlyDetailsStr != null) {
+      if (mounted) {
+        setState(() {
+          _elderlyDetails = jsonDecode(elderlyDetailsStr);
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +45,82 @@ class _ElderlyPurposeSelectionPageState extends State<ElderlyPurposeSelectionPag
         ),
         backgroundColor: Colors.teal.shade700,
         elevation: 2,
+        actions: [
+          Builder(
+            builder: (context) => Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: GestureDetector(
+                onTap: () => Scaffold.of(context).openEndDrawer(),
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.teal.shade50,
+                  child: Icon(Icons.person, color: Colors.teal.shade700),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      endDrawer: Drawer(
+        child: _elderlyDetails == null
+            ? const Center(child: CircularProgressIndicator())
+            : ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  UserAccountsDrawerHeader(
+                    accountName: Text(
+                      _elderlyDetails!['full_name'] ?? 'Elderly User',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    accountEmail: const Text('Elderly Account'),
+                    currentAccountPicture: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.elderly, size: 40, color: Colors.teal.shade700),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.shade700,
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.phone_rounded, color: Colors.teal),
+                    title: const Text('Phone Number', style: TextStyle(fontWeight: FontWeight.w600)),
+                    subtitle: Text(_elderlyDetails!['phone_number']?.toString() ?? 'Not provided'),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.home_rounded, color: Colors.teal),
+                    title: const Text('Address', style: TextStyle(fontWeight: FontWeight.w600)),
+                    subtitle: Text(_elderlyDetails!['address'] ?? 'Unknown location'),
+                  ),
+                  const Divider(),
+                  ListTile(
+                    leading: const Icon(Icons.edit_rounded, color: Colors.teal),
+                    title: const Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.w600)),
+                    onTap: () async {
+                      Navigator.pop(context); // Close drawer
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ElderlyEditProfilePage(elderlyData: _elderlyDetails!),
+                        ),
+                      );
+                      if (result == true) {
+                        _loadElderlyDetails(); // refresh details from shared preferences
+                      }
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.logout_rounded, color: Colors.red),
+                    title: const Text('Log Out', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+                    onTap: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.remove('elderly_details');
+                      if (mounted) {
+                        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                      }
+                    },
+                  ),
+                ],
+              ),
       ),
       body: Container(
         decoration: BoxDecoration(

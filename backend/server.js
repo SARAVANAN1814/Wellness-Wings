@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const elderlyRoutes = require('./routes/elderly');
 const volunteerRoutes = require('./routes/volunteer');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use((err, req, res, next) => {
 
 app.use('/api/elderly', elderlyRoutes);
 app.use('/api/volunteer', volunteerRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

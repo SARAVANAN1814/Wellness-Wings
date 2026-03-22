@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wellness_wings/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VolunteerLoginPage extends StatefulWidget {
   const VolunteerLoginPage({super.key});
@@ -14,6 +15,7 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
   final _passwordController = TextEditingController();
   final _apiService = ApiService();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -30,11 +32,118 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
         if (!mounted) return;
 
         if (result['success']) {
-          Navigator.pushReplacementNamed(
-            context,
-            '/volunteer_availability',
-            arguments: result['user'] as Map<String, dynamic>,
-          );
+          final user = result['user'] as Map<String, dynamic>;
+          final status = user['status'] as String? ?? 'pending';
+          final normalizedStatus = status.toLowerCase().trim();
+
+          if (normalizedStatus == 'approved') {
+            // Case where status is 'approved'
+            final prefs = await SharedPreferences.getInstance();
+            final String loginKey = 'first_login_approved_${user['email']}';
+            bool isFirstLogin = prefs.getBool(loginKey) ?? true;
+
+            if (isFirstLogin) {
+              await prefs.setBool(loginKey, false);
+              if (!mounted) return;
+              await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Row(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.green),
+                      SizedBox(width: 10),
+                      Text('Access Granted!'),
+                    ],
+                  ),
+                  content: const Text('Congratulations! Your profile has been approved by our admin team. You can now start serving the community.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Start Now'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (!mounted) return;
+            Navigator.pushReplacementNamed(
+              context,
+              '/volunteer_availability',
+              arguments: user,
+            );
+          } else if (normalizedStatus == 'pending') {
+            await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                title: const Row(
+                  children: [
+                    Icon(Icons.hourglass_empty, color: Colors.orange, size: 28),
+                    SizedBox(width: 10),
+                    Text('Waiting for Approval'),
+                  ],
+                ),
+                content: const Text(
+                  'Your registration is under review.\n\nPlease wait for the admin to approve your profile before you can log in. You will be able to access the app once approved.',
+                  style: TextStyle(fontSize: 14, height: 1.5),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK', style: TextStyle(color: Colors.orange)),
+                  ),
+                ],
+              ),
+            );
+          } else if (normalizedStatus == 'rejected') {
+            await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                title: const Row(
+                  children: [
+                    Icon(Icons.cancel, color: Colors.red, size: 28),
+                    SizedBox(width: 10),
+                    Text('Application Rejected'),
+                  ],
+                ),
+                content: const Text(
+                  'Your volunteer application has been reviewed and rejected by the admin.\n\nYou cannot log in with this account. Please contact support if you believe this is an error.',
+                  style: TextStyle(fontSize: 14, height: 1.5),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK', style: TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            // Unexpected status
+            await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red),
+                    SizedBox(width: 10),
+                    Text('Status Error'),
+                  ],
+                ),
+                content: Text('Your account status ($status) is unrecognized. Please contact support.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+          setState(() => _isLoading = false);
+          return;
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -46,8 +155,8 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login failed. Please check your internet connection.'),
+          SnackBar(
+            content: Text('Login failed: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -139,11 +248,22 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
                   // Password field
                   TextFormField(
                     controller: _passwordController,
-                    obscureText: true,
+                    obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       labelStyle: TextStyle(color: Colors.grey[700]),
                       prefixIcon: const Icon(Icons.lock_outline, color: Colors.teal),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.teal,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

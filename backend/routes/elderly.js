@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid phone number or password'
+                message: 'No user found, please register first'
             });
         }
 
@@ -150,4 +150,87 @@ router.get('/details', async (req, res) => {
     }
 });
 
-module.exports = router; 
+// PUT update elderly profile
+router.put('/update/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const {
+            fullName,
+            gender,
+            email,
+            phoneNumber,
+            address
+        } = req.body;
+
+        const query = `
+            UPDATE elderly_users 
+            SET full_name = $1, gender = $2, email = $3, phone_number = $4, address = $5
+            WHERE id = $6
+            RETURNING id, full_name, gender, email, phone_number, address
+        `;
+        const values = [fullName, gender, email, phoneNumber, address, id];
+
+        const result = await pool.query(query, values);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Profile updated successfully',
+            user: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Update error:', error);
+        
+        if (error.constraint === 'elderly_users_email_key') {
+            return res.status(400).json({
+                success: false,
+                message: 'Email already registered to another account'
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Update failed due to server error'
+        });
+    }
+});
+
+// GET elderly profile by ID
+router.get('/profile/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const query = 'SELECT * FROM elderly_users WHERE id = $1';
+        const result = await pool.query(query, [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Elderly user not found'
+            });
+        }
+
+        const user = result.rows[0];
+        delete user.password_hash;
+
+        res.json({
+            success: true,
+            user: user
+        });
+
+    } catch (error) {
+        console.error('Error fetching elderly profile:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
+});
+
+module.exports = router;

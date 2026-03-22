@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:wellness_wings/services/api_service.dart';
 //import 'dart:io';
@@ -30,7 +31,9 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _experienceController = TextEditingController();
+  final _verificationIdController = TextEditingController();
   String? _selectedGender;
+  String? _selectedIdType;
   String? _selectedFileName;
   bool _agreedToTerms = false;
   bool _hasExperience = false;
@@ -43,18 +46,56 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
   final _emailController = TextEditingController();
   bool _isLoading = false;
   Uint8List? _profileImageBytes;
+  Uint8List? _idCardBytes;
+  bool _obscurePassword = true;
 
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
+      withData: true,
     );
 
     if (result != null) {
-      setState(() {
-        _selectedFileName = result.files.single.name;
-      });
+      final originalBytes = result.files.first.bytes;
+      if (originalBytes != null) {
+        final compressed = await _compressImage(originalBytes);
+        setState(() {
+          _selectedFileName = result.files.single.name;
+          _idCardBytes = compressed ?? originalBytes;
+        });
+      }
     }
+  }
+
+  void _showIdPreview() {
+    if (_idCardBytes == null) return;
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppBar(
+              title: const Text('ID Proof Preview'),
+              leading: IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+              backgroundColor: Colors.teal.shade700,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.memory(_idCardBytes!, fit: BoxFit.contain),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _deleteIdProof() {
+    setState(() {
+      _idCardBytes = null;
+      _selectedFileName = null;
+    });
   }
 
   Future<Uint8List?> _compressImage(Uint8List imageBytes) async {
@@ -206,49 +247,29 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
 
   final List<_InterviewQuestion> _interviewQuestions = [
     _InterviewQuestion(
-      question: '1. Why do you want to volunteer with elderly and physically challenged individuals?',
+      question: '1. Have you ever been involved in any criminal activity or legal disputes?',
+      options: ['No, never', 'Yes, previously', 'Prefer not to say'],
+    ),
+    _InterviewQuestion(
+      question: '2. Do you formally consent to a thorough background check of your provided documents?',
+      options: ['Yes, I consent', 'No, I do not consent'],
+    ),
+    _InterviewQuestion(
+      question: '3. In case of a medical emergency during a visit, what is your first point of action?',
       options: [
-        'To gain work experience in healthcare',
-        'To make a positive impact in others\' lives',
-        'To fulfill community service requirements',
-        'To spend my free time productively'
+        'Call 108/Emergency Services immediately',
+        'Call the family members first',
+        'Try to administer medicine yourself',
+        'Wait for someone to arrive'
       ],
     ),
     _InterviewQuestion(
-      question: '2. How would you handle an emergency situation while assisting someone?',
-      options: [
-        'Call emergency services immediately',
-        'Contact the person\'s family first',
-        'Try to handle the situation myself',
-        'Ask nearby people for help'
-      ],
+      question: '4. Can you guarantee availability for at least 5 hours per week for our community?',
+      options: ['Yes, definitely', 'Maybe, depends on schedule', 'No, not consistently'],
     ),
     _InterviewQuestion(
-      question: '3. What is your understanding of patient confidentiality?',
-      options: [
-        'Never share patient information with anyone',
-        'Share information only with family members',
-        'Share information only when necessary',
-        'Share information with other volunteers'
-      ],
-    ),
-    _InterviewQuestion(
-      question: '4. How many hours per week can you commit to volunteering?',
-      options: [
-        'Less than 5 hours',
-        '5-10 hours',
-        '10-15 hours',
-        'More than 15 hours'
-      ],
-    ),
-    _InterviewQuestion(
-      question: '5. What is your approach to helping elderly individuals?',
-      options: [
-        'Being patient and understanding',
-        'Being quick and efficient',
-        'Being professional and distant',
-        'Being casual and friendly'
-      ],
+      question: '5. Do you have any prior experience or certifications in providing elderly care or first aid?',
+      options: ['Yes, I am certified', 'I have experience but no certificate', 'No experience'],
     ),
   ];
 
@@ -503,6 +524,7 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             labelText: 'Email',
                             labelStyle: TextStyle(color: Colors.grey[700]),
@@ -532,9 +554,15 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(10),
+                          ],
                           decoration: InputDecoration(
                             labelText: 'Phone Number',
                             labelStyle: TextStyle(color: Colors.grey[700]),
+                            prefixText: '+91 ',
                             prefixIcon: const Icon(Icons.phone_outlined, color: Colors.teal),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -551,6 +579,9 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your phone number';
+                            }
+                            if (value.length != 10) {
+                              return 'Phone number must be exactly 10 digits';
                             }
                             return null;
                           },
@@ -620,10 +651,22 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _passwordController,
+                          obscureText: _obscurePassword,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             labelStyle: TextStyle(color: Colors.grey[700]),
                             prefixIcon: const Icon(Icons.lock_outline, color: Colors.teal),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                color: Colors.teal,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -745,6 +788,143 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
                             }
                             return null;
                           },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Government ID Verification Section
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Govt ID Verification',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            const Text(' *', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: _selectedIdType,
+                          decoration: InputDecoration(
+                            labelText: 'Document Type',
+                            prefixIcon: const Icon(Icons.description_outlined, color: Colors.teal),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          items: ['Aadhar', 'PAN', 'Voter ID', 'Driving License']
+                              .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedIdType = value;
+                              _verificationIdController.clear();
+                            });
+                          },
+                          validator: (value) => value == null ? 'Please select a document type' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _verificationIdController,
+                          textCapitalization: (_selectedIdType == 'PAN' || _selectedIdType == 'Voter ID' || _selectedIdType == 'Driving License')
+                              ? TextCapitalization.characters
+                              : TextCapitalization.none,
+                          keyboardType: _selectedIdType == 'Aadhar' ? TextInputType.number : TextInputType.text,
+                          inputFormatters: _selectedIdType == 'Aadhar'
+                              ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(12)]
+                              : _selectedIdType == 'PAN'
+                                  ? [LengthLimitingTextInputFormatter(10)]
+                                  : _selectedIdType == 'Voter ID'
+                                      ? [LengthLimitingTextInputFormatter(10)]
+                                      : [LengthLimitingTextInputFormatter(16)],
+                          decoration: InputDecoration(
+                            labelText: 'Govt ID Number',
+                            prefixIcon: const Icon(Icons.badge_outlined, color: Colors.teal),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            helperText: _selectedIdType == 'Aadhar'
+                                ? 'Format: 12 digits (e.g. 123456789012)'
+                                : _selectedIdType == 'PAN'
+                                    ? 'Format: ABCDE1234F (5 letters + 4 digits + 1 letter)'
+                                    : _selectedIdType == 'Voter ID'
+                                        ? 'Format: ABC1234567 (3 letters + 7 digits)'
+                                        : _selectedIdType == 'Driving License'
+                                            ? 'Format: e.g. TN01 20191234567'
+                                            : 'Select a document type first',
+                            helperStyle: TextStyle(color: Colors.teal.shade600, fontSize: 12),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'ID Number is mandatory';
+                            }
+                            final v = value.trim().toUpperCase();
+                            if (_selectedIdType == 'Aadhar') {
+                              if (!RegExp(r'^\d{12}$').hasMatch(v)) {
+                                return 'Aadhar must be exactly 12 digits';
+                              }
+                            } else if (_selectedIdType == 'PAN') {
+                              if (!RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$').hasMatch(v)) {
+                                return 'Invalid PAN format (e.g. ABCDE1234F)';
+                              }
+                            } else if (_selectedIdType == 'Voter ID') {
+                              if (!RegExp(r'^[A-Z]{3}[0-9]{7}$').hasMatch(v)) {
+                                return 'Invalid Voter ID format (e.g. ABC1234567)';
+                              }
+                            } else if (_selectedIdType == 'Driving License') {
+                              if (!RegExp(r'^[A-Z]{2}\d{2}\s?\d{4}\d{7}$').hasMatch(v)) {
+                                return 'Invalid DL format (e.g. TN0120191234567)';
+                              }
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        if (_idCardBytes == null)
+                          ElevatedButton.icon(
+                            onPressed: _pickFile,
+                            icon: const Icon(Icons.upload_file),
+                            label: const Text('Upload Govt ID Proof (Photo)'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange.shade700,
+                              minimumSize: const Size(double.infinity, 50),
+                            ),
+                          )
+                        else
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.teal.shade300),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.check_circle, color: Colors.green),
+                                const SizedBox(width: 8),
+                                Expanded(child: Text('Uploaded: $_selectedFileName', overflow: TextOverflow.ellipsis)),
+                                IconButton(icon: const Icon(Icons.remove_red_eye, color: Colors.teal), onPressed: _showIdPreview),
+                                IconButton(icon: const Icon(Icons.delete_outline, color: Colors.red), onPressed: _deleteIdProof),
+                              ],
+                            ),
+                          ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8.0),
+                          child: Text('Note: Identity proof is strictly mandatory for safety.', 
+                            style: TextStyle(color: Colors.red, fontSize: 12)),
                         ),
                       ],
                     ),
@@ -943,41 +1123,64 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
                               if (_profileImageBytes != null) {
                                 base64Image = base64Encode(_profileImageBytes!);
                               }
+                              String? base64IdCard;
+                              if (_idCardBytes != null) {
+                                base64IdCard = base64Encode(_idCardBytes!);
+                              }
+                                if (_idCardBytes == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Identity proof image is mandatory!'), backgroundColor: Colors.red),
+                                  );
+                                  setState(() => _isLoading = false);
+                                  return;
+                                }
 
-                              final result = await _apiService.registerVolunteer(
-                                fullName: _nameController.text.trim(),
-                                gender: _selectedGender!,
-                                email: _emailController.text.trim(),
-                                phoneNumber: _phoneController.text.trim(),
-                                password: _passwordController.text,
-                                hasExperience: _hasExperience,
-                                experienceDetails: _hasExperience ? _experienceController.text : null,
-                                idCardPath: _selectedFileName,
-                                profilePicture: base64Image,
-                                place: _placeController.text.trim(),
-                                state: _stateController.text.trim(),
-                                country: _countryController.text.trim(),
-                                pricePerHour: double.tryParse(_priceController.text) ?? 0,
-                                interviewAnswers: !_hasExperience ? {
-                                  for (var q in _interviewQuestions)
-                                    q.question: q.selectedAnswer ?? ''
-                                } : null,
-                              );
+                                final result = await _apiService.registerVolunteer(
+                                  fullName: _nameController.text.trim(),
+                                  gender: _selectedGender!,
+                                  email: _emailController.text.trim(),
+                                  phoneNumber: _phoneController.text.trim(),
+                                  password: _passwordController.text,
+                                  hasExperience: _hasExperience,
+                                  experienceDetails: _hasExperience ? _experienceController.text : null,
+                                  idCardPath: base64IdCard,
+                                  profilePicture: base64Image,
+                                  verificationId: _verificationIdController.text.trim(),
+                                  idType: _selectedIdType,
+                                  place: _placeController.text.trim(),
+                                  state: _stateController.text.trim(),
+                                  country: _countryController.text.trim(),
+                                  pricePerHour: double.tryParse(_priceController.text) ?? 0,
+                                  interviewAnswers: !_hasExperience ? {
+                                    for (var q in _interviewQuestions)
+                                      q.question: q.selectedAnswer ?? ''
+                                  } : null,
+                                );
 
                               setState(() {
                                 _isLoading = false;
                               });
 
-                              if (result['success']) {
-                                if (!mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Registration successful'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                                Navigator.pushReplacementNamed(context, '/volunteer_login');
-                              } else {
+                                if (result['success']) {
+                                  if (!mounted) return;
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Registration Successful!'),
+                                      content: const Text('Your profile is now under review. Please wait for Admin approval before logging in.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context); // Close dialog
+                                            Navigator.pushReplacementNamed(context, '/volunteer_login');
+                                          },
+                                          child: const Text('Understood'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                } else {
                                 if (!mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(

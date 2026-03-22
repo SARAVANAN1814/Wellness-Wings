@@ -20,7 +20,9 @@ router.post('/register', async (req, res) => {
             state,
             country,
             price_per_hour,
-            interview_answers
+            interview_answers,
+            verification_id,
+            id_type
         } = req.body;
 
         // Log the request body for debugging
@@ -50,8 +52,8 @@ router.post('/register', async (req, res) => {
             (full_name, gender, email, phone_number, password_hash, 
             has_experience, experience_details, id_card_path, 
             profile_picture, place, state, country, 
-            price_per_hour, interview_answers) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
+            price_per_hour, interview_answers, verification_id, id_type) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
             RETURNING *`;
 
         const values = [
@@ -68,7 +70,9 @@ router.post('/register', async (req, res) => {
             state,
             country,
             price_per_hour,
-            interview_answers ? JSON.stringify(interview_answers) : null
+            interview_answers ? JSON.stringify(interview_answers) : null,
+            verification_id || null,
+            id_type || null
         ];
 
         const result = await pool.query(query, values);
@@ -126,7 +130,7 @@ router.post('/login', async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'No user found, please register first'
             });
         }
 
@@ -160,7 +164,9 @@ router.post('/login', async (req, res) => {
                 state: user.state,
                 country: user.country,
                 price_per_hour: user.price_per_hour,
-                interview_answers: user.interview_answers
+                interview_answers: user.interview_answers,
+                status: user.status,
+                verification_id: user.verification_id
             }
         });
 
@@ -178,7 +184,7 @@ router.get('/profile/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const query = 'SELECT * FROM volunteer_users WHERE volunteer_id = $1';
+        const query = 'SELECT * FROM volunteer_users WHERE id = $1';
         const result = await pool.query(query, [id]);
 
         if (result.rows.length === 0) {
@@ -206,65 +212,60 @@ router.get('/profile/:id', async (req, res) => {
 });
 
 // Update Volunteer Profile
-router.put('/profile/:id', async (req, res) => {
+router.put('/update/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const {
             fullName,
             gender,
+            email,
             phoneNumber,
+            place,
+            state,
+            country,
+            pricePerHour,
             hasExperience,
-            experienceDetails,
-            idCardPath
+            experienceDetails
         } = req.body;
 
         const query = `
-            UPDATE volunteer_users
-            SET 
-                full_name = COALESCE($1, full_name),
-                gender = COALESCE($2, gender),
-                phone_number = COALESCE($3, phone_number),
-                has_experience = COALESCE($4, has_experience),
-                experience_details = COALESCE($5, experience_details),
-                id_card_path = COALESCE($6, id_card_path),
-                updated_at = CURRENT_TIMESTAMP
-            WHERE volunteer_id = $7
-            RETURNING *
+            UPDATE volunteer_users 
+            SET full_name = $1, gender = $2, email = $3, phone_number = $4,
+                place = $5, state = $6, country = $7, price_per_hour = $8,
+                has_experience = $9, experience_details = $10
+            WHERE id = $11
+            RETURNING id, full_name, gender, email, phone_number, place, state, country, price_per_hour, has_experience, experience_details, profile_picture
         `;
-
-        const values = [
-            fullName,
-            gender,
-            phoneNumber,
-            hasExperience,
-            experienceDetails,
-            idCardPath,
-            id
-        ];
+        const values = [fullName, gender, email, phoneNumber, place, state, country, pricePerHour, hasExperience, experienceDetails, id];
 
         const result = await pool.query(query, values);
 
         if (result.rows.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: 'Volunteer not found'
+                message: 'User not found'
             });
         }
-
-        const updatedVolunteer = result.rows[0];
-        delete updatedVolunteer.password_hash;
 
         res.json({
             success: true,
             message: 'Profile updated successfully',
-            volunteer: updatedVolunteer
+            user: result.rows[0]
         });
 
     } catch (error) {
-        console.error('Profile update error:', error);
+        console.error('Update error:', error);
+        
+        if (error.constraint === 'volunteer_users_email_key') {
+            return res.status(400).json({
+                success: false,
+                message: 'Email already registered to another account'
+            });
+        }
+
         res.status(500).json({
             success: false,
-            message: 'Failed to update volunteer profile'
+            message: 'Update failed due to server error'
         });
     }
 });
@@ -274,7 +275,7 @@ router.delete('/profile/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const query = 'DELETE FROM volunteer_users WHERE volunteer_id = $1 RETURNING *';
+        const query = 'DELETE FROM volunteer_users WHERE id = $1 RETURNING *';
         const result = await pool.query(query, [id]);
 
         if (result.rows.length === 0) {
@@ -301,7 +302,7 @@ router.delete('/profile/:id', async (req, res) => {
 // Get All Volunteers (for admin purposes)
 router.get('/all', async (req, res) => {
     try {
-        const query = 'SELECT volunteer_id, full_name, gender, phone_number, has_experience FROM volunteer_users';
+        const query = 'SELECT id, full_name, gender, phone_number, has_experience FROM volunteer_users';
         const result = await pool.query(query);
 
         res.json({
@@ -420,6 +421,7 @@ router.get('/available', async (req, res) => {
             INNER JOIN volunteer_services vs ON v.id = vs.volunteer_id
             WHERE vs.service_type = $1 
             AND vs.is_available = true
+            AND v.status = 'approved'
         `;
 
         const params = [service_type];
