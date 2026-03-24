@@ -1,0 +1,56 @@
+
+Table: elderly_users
+  id | integer  | Default: nextval('elderly_users_id_seq'::regclass) | Nullable: NO
+  created_at | timestamp without time zone  | Default: CURRENT_TIMESTAMP | Nullable: YES
+  latitude | double precision  | Default: null | Nullable: YES
+  longitude | double precision  | Default: null | Nullable: YES
+  password_hash | character varying (255) | Default: null | Nullable: NO
+  phone_number | character varying (20) | Default: null | Nullable: NO
+  address | text  | Default: null | Nullable: NO
+  full_name | character varying (100) | Default: null | Nullable: NO
+  gender | character varying (20) | Default: null | Nullable: NO
+  email | character varying (100) | Default: null | Nullable: NO
+
+Table: volunteer_services
+  volunteer_id | integer  | Default: null | Nullable: NO
+  is_available | boolean  | Default: false | Nullable: YES
+  updated_at | timestamp without time zone  | Default: CURRENT_TIMESTAMP | Nullable: YES
+  service_type | character varying (50) | Default: null | Nullable: NO
+
+Table: volunteer_users
+  id | integer  | Default: nextval('volunteer_users_id_seq'::regclass) | Nullable: NO
+  has_experience | boolean  | Default: false | Nullable: NO
+  created_at | timestamp without time zone  | Default: CURRENT_TIMESTAMP | Nullable: YES
+  price_per_hour | numeric  | Default: null | Nullable: YES
+  rating | numeric  | Default: 5.00 | Nullable: YES
+  total_ratings | integer  | Default: 0 | Nullable: YES
+  latitude | double precision  | Default: null | Nullable: YES
+  longitude | double precision  | Default: null | Nullable: YES
+  id_card_path | text  | Default: null | Nullable: YES
+  interview_answers | text  | Default: null | Nullable: YES
+  verification_id | character varying (100) | Default: null | Nullable: YES
+  profile_picture | text  | Default: null | Nullable: YES
+  place | character varying (255) | Default: null | Nullable: YES
+  state | character varying (255) | Default: null | Nullable: YES
+  country | character varying (255) | Default: null | Nullable: YES
+  id_type | character varying (50) | Default: null | Nullable: YES
+  email | character varying (255) | Default: null | Nullable: YES
+  volunteer_id | character varying (10) | Default: nextval('volunteer_users_volunteer_id_seq'::regclass) | Nullable: NO
+  full_name | character varying (100) | Default: null | Nullable: NO
+  gender | character varying (20) | Default: null | Nullable: NO
+  phone_number | character varying (20) | Default: null | Nullable: NO
+  password_hash | character varying (255) | Default: null | Nullable: NO
+  status | character varying (50) | Default: 'pending'::character varying | Nullable: YES
+  experience_details | text  | Default: null | Nullable: YES
+
+Table: bookings
+  completed_at | timestamp with time zone  | Default: null | Nullable: YES
+  volunteer_id | integer  | Default: null | Nullable: YES
+  elderly_id | integer  | Default: null | Nullable: YES
+  booking_time | timestamp with time zone  | Default: CURRENT_TIMESTAMP | Nullable: NO
+  created_at | timestamp with time zone  | Default: CURRENT_TIMESTAMP | Nullable: YES
+  id | integer  | Default: nextval('bookings_id_seq'::regclass) | Nullable: NO
+  is_emergency | boolean  | Default: false | Nullable: YES
+  service_type | character varying (100) | Default: null | Nullable: NO
+  description | text  | Default: null | Nullable: YES
+  status | character varying (20) | Default: 'pending'::character varying | Nullable: YES
