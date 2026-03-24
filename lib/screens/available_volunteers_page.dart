@@ -4,6 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:wellness_wings/screens/booking_confirmation_page.dart';
 import '../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class AvailableVolunteersPage extends StatefulWidget {
   final String serviceType;
@@ -46,11 +48,85 @@ class _AvailableVolunteersPageState extends State<AvailableVolunteersPage> {
   }
 
   Future<void> _loadVolunteers() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
     try {
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        print('Location services are disabled.');
+        if (!mounted) return;
+        
+        bool? openSettings = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.location_off, color: Colors.orange),
+                SizedBox(width: 10),
+                Text('Location Disabled'),
+              ],
+            ),
+            content: const Text('Your location services (GPS) are turned off. Please enable them to find volunteers nearby.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+        );
+
+        if (openSettings == true) {
+          await Geolocator.openLocationSettings();
+        }
+        
+        setState(() {
+          _isLoading = false;
+          _error = 'Please enable location services and try again.';
+        });
+        return;
+      }
+      
+      // Get current location
+      print('Fetching current location for matching...');
+      LocationPermission permission = await Geolocator.checkPermission();
+      print('Initial matching permission: $permission');
+      
+      if (permission == LocationPermission.denied) {
+        print('Requesting matching permission...');
+        permission = await Geolocator.requestPermission();
+        print('Matching permission after request: $permission');
+      }
+
+      double? lat;
+      double? lng;
+
+      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+        Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high
+        );
+        lat = position.latitude;
+        lng = position.longitude;
+        print('Matching coordinates: $lat, $lng');
+      } else {
+        print('Matching location permission not granted: $permission');
+      }
+
       final result = await _apiService.getAvailableVolunteers(
         serviceType: widget.serviceType,
         emergency: widget.isEmergency,
+        latitude: lat,
+        longitude: lng,
       );
+      print('Get available volunteers result: ${result['success']}');
 
       setState(() {
         _isLoading = false;
@@ -191,8 +267,45 @@ Thank you.''';
           ),
         ),
         child: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(color: Colors.white),
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.teal.shade700.withOpacity(0.5),
+                          ),
+                        ),
+                        Icon(
+                          Icons.location_on,
+                          color: Colors.teal.shade700,
+                          size: 40,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Text(
+                        'Hang tight, we are fetching volunteers in nearby locations for you...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.teal.shade800,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               )
             : _error != null
                 ? Center(
@@ -212,6 +325,11 @@ Thank you.''';
                             color: Colors.black87,
                           ),
                         ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _loadVolunteers,
+                          child: const Text('Retry'),
+                        ),
                       ],
                     ),
                   )
@@ -227,197 +345,223 @@ Thank you.''';
                             ),
                             const SizedBox(height: 16),
                             const Text(
-                              'No volunteers available',
+                              'Sorry no volunteers found in the nearby',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black87,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Try checking again later or adjusting your search.',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
                               ),
                             ),
                           ],
                         ),
                       )
-                    : GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.60,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 16,
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        itemCount: _volunteers.length,
-                        itemBuilder: (context, index) {
-                          final volunteer = _volunteers[index];
-                          return Card(
-                            elevation: 8,
-                            shadowColor: Colors.black26,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: BorderSide(
-                                color: Colors.teal.shade100,
-                                width: 1,
+                    : Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: const Text(
+                              'Here are the list of volunteers, nearby',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [Colors.white, Colors.teal.shade50],
-                                ),
+                          ),
+                          Expanded(
+                            child: GridView.builder(
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.60,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 16,
                               ),
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Colors.teal.shade100,
-                                            width: 2,
-                                          ),
-                                        ),
-                                        child: CircleAvatar(
-                                          radius: 35,
-                                          backgroundColor: Colors.teal.shade50,
-                                          child: volunteer['profile_picture'] != null
-                                              ? ClipOval(
-                                                  child: Image.memory(
-                                                    base64Decode(volunteer['profile_picture']),
-                                                    width: 70,
-                                                    height: 70,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                )
-                                              : Icon(
-                                                  Icons.person_rounded,
-                                                  size: 35,
-                                                  color: Colors.teal.shade700,
-                                                ),
-                                        ),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              itemCount: _volunteers.length,
+                              itemBuilder: (context, index) {
+                                final volunteer = _volunteers[index];
+                                return Card(
+                                  elevation: 8,
+                                  shadowColor: Colors.black26,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    side: BorderSide(
+                                      color: Colors.teal.shade100,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [Colors.white, Colors.teal.shade50],
                                       ),
-                                      if (volunteer['has_experience'] == true)
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.teal.shade50,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 2,
+                                    ),
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(3),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.teal.shade100,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              child: CircleAvatar(
+                                                radius: 35,
+                                                backgroundColor: Colors.teal.shade50,
+                                                child: volunteer['profile_picture'] != null
+                                                    ? ClipOval(
+                                                        child: Image.memory(
+                                                          base64Decode(volunteer['profile_picture']),
+                                                          width: 70,
+                                                          height: 70,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      )
+                                                    : Icon(
+                                                        Icons.person_rounded,
+                                                        size: 35,
+                                                        color: Colors.teal.shade700,
+                                                      ),
                                               ),
                                             ),
-                                            child: Icon(
-                                              Icons.verified_rounded,
+                                            if (volunteer['has_experience'] == true)
+                                              Positioned(
+                                                bottom: 0,
+                                                right: 0,
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(4),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.teal.shade50,
+                                                    shape: BoxShape.circle,
+                                                    border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.verified_rounded,
+                                                    color: Colors.teal.shade700,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          volunteer['full_name'] ?? 'Name not available',
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black87,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        _buildInfoRow(
+                                          Icons.phone_rounded,
+                                          volunteer['phone_number'] ?? 'Not available',
+                                        ),
+                                        const SizedBox(height: 4),
+                                        _buildInfoRow(
+                                          Icons.location_on_rounded,
+                                          volunteer['place'] ?? 'Location not available',
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.teal.shade50,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            '₹${volunteer['price_per_hour']}/hr',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
                                               color: Colors.teal.shade700,
-                                              size: 20,
                                             ),
                                           ),
                                         ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    volunteer['full_name'] ?? 'Name not available',
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _buildInfoRow(
-                                    Icons.phone_rounded,
-                                    volunteer['phone_number'] ?? 'Not available',
-                                  ),
-                                  const SizedBox(height: 4),
-                                  _buildInfoRow(
-                                    Icons.location_on_rounded,
-                                    volunteer['place'] ?? 'Location not available',
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.teal.shade50,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      '₹${volunteer['price_per_hour']}/hr',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.teal.shade700,
-                                      ),
-                                    ),
-                                  ),
-                                  if (volunteer['has_experience'] == true &&
-                                      volunteer['experience_details'] != null)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4),
-                                      child: Text(
-                                        volunteer['experience_details'],
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.grey.shade700,
-                                          fontStyle: FontStyle.italic,
+                                        if (volunteer['has_experience'] == true &&
+                                            volunteer['experience_details'] != null)
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 4),
+                                            child: Text(
+                                              volunteer['experience_details'],
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: Colors.grey.shade700,
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: _buildActionButton(
+                                                icon: Icons.phone_rounded,
+                                                label: 'Call',
+                                                color: Colors.green.shade600,
+                                                onPressed: () async {
+                                                  final phoneNumber = volunteer['phone_number'];
+                                                  if (phoneNumber != null) {
+                                                    final url = Uri.parse('tel:$phoneNumber');
+                                                    if (await canLaunchUrl(url)) {
+                                                      await launchUrl(url);
+                                                    }
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: _buildActionButton(
+                                                icon: Icons.message_rounded,
+                                                label: 'Book',
+                                                color: Colors.teal.shade700,
+                                                onPressed: () => _sendWhatsAppMessage(volunteer),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.center,
-                                      ),
+                                      ],
                                     ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: _buildActionButton(
-                                          icon: Icons.phone_rounded,
-                                          label: 'Call',
-                                          color: Colors.green.shade600,
-                                          onPressed: () async {
-                                            final phoneNumber = volunteer['phone_number'];
-                                            if (phoneNumber != null) {
-                                              final url = Uri.parse('tel:$phoneNumber');
-                                              if (await canLaunchUrl(url)) {
-                                                await launchUrl(url);
-                                              }
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: _buildActionButton(
-                                          icon: Icons.message_rounded,
-                                          label: 'Book',
-                                          color: Colors.teal.shade700,
-                                          onPressed: () => _sendWhatsAppMessage(volunteer),
-                                        ),
-                                      ),
-                                    ],
                                   ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       ),
-      ),
+                    ),
     );
   }
 

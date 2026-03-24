@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellness_wings/services/api_service.dart';
@@ -309,18 +310,19 @@ class HomePage extends StatelessWidget {
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/admin_login');
-                                },
-                                child: Text(
-                                  'Admin Login',
-                                  style: TextStyle(
-                                    color: Colors.teal.shade700,
-                                    fontWeight: FontWeight.bold,
+                              if (!kReleaseMode)
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/admin_login');
+                                  },
+                                  child: Text(
+                                    'Admin Login',
+                                    style: TextStyle(
+                                      color: Colors.teal.shade700,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
                             ],
                           ),
                         ],

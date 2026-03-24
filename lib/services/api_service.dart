@@ -5,9 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 //import 'dart:convert';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:3000/api'; // Using ADB reverse proxy (adb reverse tcp:3000 tcp:3000)
-  // static const String baseUrl = 'http://192.168.0.105:3000/api'; // Machine IP for Wi-Fi/Mobile connectivity
+  static const String baseUrl = 'http://10.140.62.54:3000/api'; // Machine IP for physical device connectivity
+  // static const String baseUrl = 'http://10.255.68.54:3000/api'; // Previous Machine IP
+  // static const String baseUrl = 'http://10.64.75.196:3000/api'; // Previous Machine IP
+  // static const String baseUrl = 'http://localhost:3000/api'; // Using ADB reverse proxy (adb reverse tcp:3000 tcp:3000)
   // static const String baseUrl = 'http://10.0.2.2:3000/api'; // Android Emulator default host loopback
+
 
   Future<Map<String, dynamic>> checkElderlyStatus(int id) async {
     try {
@@ -118,6 +121,48 @@ class ApiService {
         'success': false,
         'message': 'Connection error. Please check your internet connection.',
       };
+    }
+  }
+
+  Future<Map<String, dynamic>> updateElderlyLocation({
+    required int id,
+    required double latitude,
+    required double longitude,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/elderly/update-location'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'id': id,
+          'latitude': latitude,
+          'longitude': longitude,
+        }),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error'};
+    }
+  }
+
+  Future<Map<String, dynamic>> updateVolunteerLocation({
+    required int id,
+    required double latitude,
+    required double longitude,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/volunteer/update-location'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'id': id,
+          'latitude': latitude,
+          'longitude': longitude,
+        }),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error'};
     }
   }
 
@@ -448,10 +493,17 @@ class ApiService {
   Future<Map<String, dynamic>> getAvailableVolunteers({
     required String serviceType,
     required bool emergency,
+    double? latitude,
+    double? longitude,
   }) async {
     try {
+      String url = '$baseUrl/volunteer/available?service_type=$serviceType&emergency=$emergency';
+      if (latitude != null && longitude != null) {
+        url += '&lat=$latitude&lng=$longitude';
+      }
+      
       final response = await http.get(
-        Uri.parse('$baseUrl/volunteer/available?service_type=$serviceType&emergency=$emergency'),
+        Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
       );
 

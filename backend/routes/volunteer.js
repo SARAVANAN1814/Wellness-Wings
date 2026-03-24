@@ -410,21 +410,37 @@ router.post('/services/:volunteerId', async (req, res) => {
 // Get Available Volunteers
 router.get('/available', async (req, res) => {
     try {
-        const { service_type, emergency } = req.query;
+        const { service_type, emergency, lat, lng } = req.query;
         
         let query = `
             SELECT DISTINCT ON (v.id)
                 v.*,
                 vs.is_available,
-                vs.service_type
+                vs.service_type`;
+
+        const params = [service_type];
+        let paramIndex = 2;
+
+        if (lat && lng) {
+            query += `, 
+                (6371 * acos(
+                    LEAST(1, GREATEST(-1, 
+                        cos(radians($${paramIndex})) * cos(radians(v.latitude)) * 
+                        cos(radians(v.longitude) - radians($${paramIndex + 1})) + 
+                        sin(radians($${paramIndex})) * sin(radians(v.latitude))
+                    ))
+                )) AS distance`;
+            params.push(parseFloat(lat), parseFloat(lng));
+            paramIndex += 2;
+        }
+
+        query += `
             FROM volunteer_users v
             INNER JOIN volunteer_services vs ON v.id = vs.volunteer_id
             WHERE vs.service_type = $1 
             AND vs.is_available = true
             AND v.status = 'approved'
         `;
-
-        const params = [service_type];
 
         if (emergency === 'true') {
             query += ` AND v.id NOT IN (
@@ -433,6 +449,16 @@ router.get('/available', async (req, res) => {
                 WHERE service_type = 'Hospital Visit' 
                 AND is_available = false
             )`;
+        }
+
+        if (lat && lng) {
+            query += ` AND (6371 * acos(
+                LEAST(1, GREATEST(-1, 
+                    cos(radians($${paramIndex - 2})) * cos(radians(v.latitude)) * 
+                    cos(radians(v.longitude) - radians($${paramIndex - 1})) + 
+                    sin(radians($${paramIndex - 2})) * sin(radians(v.latitude))
+                ))
+            )) <= 5`; // 5km radius
         }
 
         query += ` ORDER BY v.id, v.full_name ASC`;
@@ -610,4 +636,31 @@ router.put('/bookings/:id/status', async (req, res) => {
     }
 });
 
-module.exports = router; 
+// Update Volunteer Location
+router.post('/update-location', async (req, res) => {
+    try {
+        const { id, latitude, longitude } = req.body;
+        if (!id || latitude === undefined || longitude === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID, latitude, and longitude are required'
+            });
+        }
+
+        const query = 'UPDATE volunteer_users SET latitude = $1, longitude = $2 WHERE id = $3';
+        await pool.query(query, [latitude, longitude, id]);
+
+        res.json({
+            success: true,
+            message: 'Location updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating volunteer location:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update location'
+        });
+    }
+});
+
+module.exports = router;

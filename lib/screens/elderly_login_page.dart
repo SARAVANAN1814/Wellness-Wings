@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wellness_wings/services/api_service.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ElderlyLoginPage extends StatefulWidget {
   const ElderlyLoginPage({super.key});
@@ -16,6 +20,74 @@ class _ElderlyLoginPageState extends State<ElderlyLoginPage> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
+  Future<void> _updateLocation(int id) async {
+    try {
+      print('Updating location for elderly user $id...');
+      
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        print('Location services are disabled.');
+        if (!mounted) return;
+        
+        bool? openSettings = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.location_off, color: Colors.orange),
+                SizedBox(width: 10),
+                Text('Location Disabled'),
+              ],
+            ),
+            content: const Text('Your location services (GPS) are turned off. Please enable them to find volunteers nearby.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+        );
+
+        if (openSettings == true) {
+          await Geolocator.openLocationSettings();
+        }
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      print('Initial permission: $permission');
+      
+      if (permission == LocationPermission.denied) {
+        print('Requesting permission...');
+        permission = await Geolocator.requestPermission();
+        print('Permission after request: $permission');
+      }
+
+      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+        Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high
+        );
+        print('Got position: ${position.latitude}, ${position.longitude}');
+        final result = await _apiService.updateElderlyLocation(
+          id: id,
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+        print('Update location result: $result');
+      } else {
+        print('Location permission not granted: $permission');
+      }
+    } catch (e) {
+      print('Error updating location: $e');
+    }
+  }
+
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -31,6 +103,10 @@ class _ElderlyLoginPageState extends State<ElderlyLoginPage> {
         if (!mounted) return;
 
         if (result['success']) {
+          final user = result['user'];
+          if (user != null && user['id'] != null) {
+            await _updateLocation(int.parse(user['id'].toString()));
+          }
           Navigator.pushReplacementNamed(context, '/elderly_purpose_selection');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

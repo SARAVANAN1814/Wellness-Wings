@@ -233,4 +233,31 @@ router.get('/profile/:id', async (req, res) => {
     }
 });
 
+// Update Elderly Location
+router.post('/update-location', async (req, res) => {
+    try {
+        const { id, latitude, longitude } = req.body;
+        if (!id || latitude === undefined || longitude === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID, latitude, and longitude are required'
+            });
+        }
+
+        const query = 'UPDATE elderly_users SET latitude = $1, longitude = $2 WHERE id = $3';
+        await pool.query(query, [latitude, longitude, id]);
+
+        res.json({
+            success: true,
+            message: 'Location updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating elderly location:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update location'
+        });
+    }
+});
+
 module.exports = router;
