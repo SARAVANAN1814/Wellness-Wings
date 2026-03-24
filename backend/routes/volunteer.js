@@ -458,7 +458,7 @@ router.get('/available', async (req, res) => {
                     cos(radians(v.longitude) - radians($${paramIndex - 1})) + 
                     sin(radians($${paramIndex - 2})) * sin(radians(v.latitude))
                 ))
-            )) <= 5`; // 5km radius
+            )) <= 30`; // 30km radius
         }
 
         query += ` ORDER BY v.id, v.full_name ASC`;
