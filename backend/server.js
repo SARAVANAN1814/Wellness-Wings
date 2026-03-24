@@ -21,12 +21,15 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    success: false,
-    message: 'Internal server error'
-  });
+// Health check endpoint to test DB connection
+const pool = require('./config/database');
+app.get('/api/health', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW()');
+    res.json({ success: true, db: 'connected', time: result.rows[0].now, env: process.env.DATABASE_URL ? 'cloud' : 'local' });
+  } catch (e) {
+    res.status(500).json({ success: false, db: 'disconnected', error: e.message });
+  }
 });
 
 app.use('/api/elderly', elderlyRoutes);

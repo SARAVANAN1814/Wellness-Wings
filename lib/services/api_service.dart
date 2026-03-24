@@ -5,7 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 //import 'dart:convert';
 
 class ApiService {
-  static const String baseUrl = 'http://10.140.62.54:3000/api'; // Machine IP for physical device connectivity
+  static const String baseUrl = 'https://wellness-wings.onrender.com/api';
+
+  //static const String baseUrl = 'http://10.140.62.54:3000/api';  Machine IP for physical device connectivity
   // static const String baseUrl = 'http://10.255.68.54:3000/api'; // Previous Machine IP
   // static const String baseUrl = 'http://10.64.75.196:3000/api'; // Previous Machine IP
   // static const String baseUrl = 'http://localhost:3000/api'; // Using ADB reverse proxy (adb reverse tcp:3000 tcp:3000)
