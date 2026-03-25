@@ -1,0 +1,939 @@
+﻿Running Gradle task 'assembleRelease'...                        
+flutter : Warning: 
+Flutter support for 
+your project's Gradle 
+version (8.3.0) will 
+soon be dropped. 
+Please upgrade your 
+Gradle version to a 
+version of at least 
+8.7.0 soon.
+At line:1 char:1
++ flutter build apk > 
+build_out.txt 2>&1 ; 
+Get-Content 
+build_out.txt -E ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Warning: Flut   
+ te...ast 8.7.0 soo    
+n.:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+Alternatively, use the 
+flag "--android-skip-bu
+ild-dependency-validati
+on" to bypass this 
+check.
+
+Potential fix: Your 
+project's gradle 
+version is typically 
+defined in the gradle 
+wrapper file. By 
+default, this can be 
+found at 
+E:\PROJECTS\Wellness Wi
+ngs\android/gradle/wrap
+per/gradle-wrapper.prop
+erties. 
+For more information, 
+see https://docs.gradle
+.org/current/userguide/
+gradle_wrapper.html.
+
+Warning: Flutter 
+support for your 
+project's Android 
+Gradle Plugin version 
+(Android Gradle Plugin 
+version 8.2.1) will 
+soon be dropped. 
+Please upgrade your 
+Android Gradle Plugin 
+version to a version 
+of at least Android 
+Gradle Plugin version 
+8.6.0 soon.
+Alternatively, use the 
+flag "--android-skip-bu
+ild-dependency-validati
+on" to bypass this 
+check.
+
+Potential fix: Your 
+project's AGP version 
+is typically defined 
+in the plugins block 
+of the 
+`settings.gradle` file 
+(E:\PROJECTS\Wellness W
+ings\android/settings.g
+radle), by a plugin 
+with the id of com.andr
+oid.application. 
+If you don't see a 
+plugins block, your 
+project was likely 
+created with an older 
+template version. In 
+this case it is most 
+likely defined in the 
+top-level build.gradle 
+file 
+(E:\PROJECTS\Wellness W
+ings\android/build.grad
+le) by the following 
+line in the 
+dependencies block of 
+the buildscript: 
+"classpath 'com.android
+.tools.build:gradle:<ve
+rsion>'".
+
+Warning: Flutter 
+support for your 
+project's Kotlin 
+version (1.8.22) will 
+soon be dropped. 
+Please upgrade your 
+Kotlin version to a 
+version of at least 
+2.1.0 soon.
+Alternatively, use the 
+flag "--android-skip-bu
+ild-dependency-validati
+on" to bypass this 
+check.
+
+Potential fix: Your 
+project's KGP version 
+is typically defined 
+in the plugins block 
+of the 
+`settings.gradle` file 
+(E:\PROJECTS\Wellness W
+ings\android/settings.g
+radle), by a plugin 
+with the id of org.jetb
+rains.kotlin.android. 
+If you don't see a 
+plugins block, your 
+project was likely 
+created with an older 
+template version, in 
+which case it is most 
+likely defined in the 
+top-level build.gradle 
+file 
+(E:\PROJECTS\Wellness W
+ings\android/build.grad
+le) by the 
+ext.kotlin_version 
+property.
+
+[ZEGO][PLUGIN] Download native dependency
+[ZEGO][PLUGIN] Native version: 3.23.0.47729
+[ZEGO][PLUGIN] The specified version SDK already exists!
+lib/screens/elderly_log
+in_page.dart:112:58: 
+Error: Required named 
+parameter 'plugins' 
+must be provided.
+            ZegoUIKitPr
+ebuiltCallInvitationSer
+vice().init(
+                       
+                       
+           ^
+lib/screens/volunteer_l
+ogin_page.dart:145:58: 
+Error: Required named 
+parameter 'plugins' 
+must be provided.
+            ZegoUIKitPr
+ebuiltCallInvitationSer
+vice().init(
+                       
+                       
+           ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/service.d
+art:405:40: Error: The 
+argument type 
+'Future<void> 
+Function(ZPNsMessage)' 
+can't be assigned to 
+the parameter type 
+'Future<void> Function(
+ZegoSignalingPluginMess
+age)'.
+ - 'Future' is from 
+'dart:async'.
+ - 'ZPNsMessage' is 
+from 'package:zego_zpns
+/src/zpns_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_zpns-2.
+8.0/lib/src/zpns_define
+s.dart').
+ - 'ZegoSignalingPlugin
+Message' is from 'packa
+ge:zego_plugin_adapter/
+src/signaling/defines.d
+art' ('/C:/Users/Saro/A
+ppData/Local/Pub/Cache/
+hosted/pub.dev/zego_plu
+gin_adapter-2.14.2/lib/
+src/signaling/defines.d
+art').
+          .setBackgroun
+dMessageHandler(onBackg
+roundMessageReceived);
+                       
+                ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/service.d
+art:417:43: Error: The 
+argument type 'void 
+Function(Map<dynamic, 
+dynamic>, UUID)' can't 
+be assigned to the 
+parameter type 'void 
+Function(Map<dynamic, 
+dynamic>, String)'.
+ - 'Map' is from 
+'dart:core'.
+ - 'UUID' is from 'pack
+age:zego_callkit/src/ze
+go_callkit_defines.dart
+' ('/C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hos
+ted/pub.dev/zego_callki
+t-1.0.0+6/lib/src/zego_
+callkit_defines.dart').
+          .setIncomingP
+ushReceivedHandler(onIn
+comingPushReceived);
+                       
+                   ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/mixins/pr
+ivate/ios.callkit.dart:
+166:11: Error: The 
+getter 'action' isn't 
+defined for the type 'Z
+egoSignalingPluginCallK
+itActionEvent'.
+ - 'ZegoSignalingPlugin
+CallKitActionEvent' is 
+from 'package:zego_plug
+in_adapter/src/signalin
+g/callkit_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_plugin_
+adapter-2.14.2/lib/src/
+signaling/callkit_defin
+es.dart').
+Try correcting the 
+name to the name of an 
+existing getter, or 
+defining a getter or 
+field named 'action'.
+    
+event.action.fulfill();
+          ^^^^^^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/mixins/pr
+ivate/ios.callkit.dart:
+182:11: Error: The 
+getter 'action' isn't 
+defined for the type 'Z
+egoSignalingPluginCallK
+itActionEvent'.
+ - 'ZegoSignalingPlugin
+CallKitActionEvent' is 
+from 'package:zego_plug
+in_adapter/src/signalin
+g/callkit_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_plugin_
+adapter-2.14.2/lib/src/
+signaling/callkit_defin
+es.dart').
+Try correcting the 
+name to the name of an 
+existing getter, or 
+defining a getter or 
+field named 'action'.
+    
+event.action.fulfill();
+          ^^^^^^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/mixins/pr
+ivate/ios.callkit.dart:
+196:11: Error: The 
+getter 'action' isn't 
+defined for the type 'Z
+egoSignalingPluginCallK
+itActionEvent'.
+ - 'ZegoSignalingPlugin
+CallKitActionEvent' is 
+from 'package:zego_plug
+in_adapter/src/signalin
+g/callkit_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_plugin_
+adapter-2.14.2/lib/src/
+signaling/callkit_defin
+es.dart').
+Try correcting the 
+name to the name of an 
+existing getter, or 
+defining a getter or 
+field named 'action'.
+    
+event.action.fulfill();
+          ^^^^^^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/mixins/pr
+ivate/ios.callkit.dart:
+259:11: Error: The 
+getter 'action' isn't 
+defined for the type 'Z
+egoSignalingPluginCallK
+itActionEvent'.
+ - 'ZegoSignalingPlugin
+CallKitActionEvent' is 
+from 'package:zego_plug
+in_adapter/src/signalin
+g/callkit_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_plugin_
+adapter-2.14.2/lib/src/
+signaling/callkit_defin
+es.dart').
+Try correcting the 
+name to the name of an 
+existing getter, or 
+defining a getter or 
+field named 'action'.
+    
+event.action.fulfill();
+          ^^^^^^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/mixins/pr
+ivate/ios.callkit.dart:
+291:11: Error: The 
+getter 'action' isn't 
+defined for the type 'Z
+egoSignalingPluginCallK
+itActionEvent'.
+ - 'ZegoSignalingPlugin
+CallKitActionEvent' is 
+from 'package:zego_plug
+in_adapter/src/signalin
+g/callkit_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_plugin_
+adapter-2.14.2/lib/src/
+signaling/callkit_defin
+es.dart').
+Try correcting the 
+name to the name of an 
+existing getter, or 
+defining a getter or 
+field named 'action'.
+    
+event.action.fulfill();
+          ^^^^^^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/mixins/pr
+ivate/ios.callkit.dart:
+317:11: Error: The 
+getter 'action' isn't 
+defined for the type 'Z
+egoSignalingPluginCallK
+itActionEvent'.
+ - 'ZegoSignalingPlugin
+CallKitActionEvent' is 
+from 'package:zego_plug
+in_adapter/src/signalin
+g/callkit_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_plugin_
+adapter-2.14.2/lib/src/
+signaling/callkit_defin
+es.dart').
+Try correcting the 
+name to the name of an 
+existing getter, or 
+defining a getter or 
+field named 'action'.
+    
+event.action.fulfill();
+          ^^^^^^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/mixins/pr
+ivate/ios.callkit.dart:
+329:11: Error: The 
+getter 'action' isn't 
+defined for the type 'Z
+egoSignalingPluginCallK
+itActionEvent'.
+ - 'ZegoSignalingPlugin
+CallKitActionEvent' is 
+from 'package:zego_plug
+in_adapter/src/signalin
+g/callkit_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_plugin_
+adapter-2.14.2/lib/src/
+signaling/callkit_defin
+es.dart').
+Try correcting the 
+name to the name of an 
+existing getter, or 
+defining a getter or 
+field named 'action'.
+    
+event.action.fulfill();
+          ^^^^^^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/callkit/h
+andler.android.dart:788
+:61: Error: The 
+argument type 'void 
+Function(ZPNsMessage)' 
+can't be assigned to 
+the parameter type 
+'void Function(ZegoSign
+alingPluginMessage)?'.
+ - 'ZPNsMessage' is 
+from 'package:zego_zpns
+/src/zpns_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_zpns-2.
+8.0/lib/src/zpns_define
+s.dart').
+ - 'ZegoSignalingPlugin
+Message' is from 'packa
+ge:zego_plugin_adapter/
+src/signaling/defines.d
+art' ('/C:/Users/Saro/A
+ppData/Local/Pub/Cache/
+hosted/pub.dev/zego_plu
+gin_adapter-2.14.2/lib/
+src/signaling/defines.d
+art').
+  ZegoUIKit().getSignal
+ingPlugin().setThroughM
+essageHandler(_onThroug
+hMessage);
+                       
+                       
+              ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/plugins.d
+art:86:55: Error: The 
+argument type 'void Fun
+ction(ZegoNetworkMode)'
+ can't be assigned to 
+the parameter type 
+'void Function(ZegoUIKi
+tNetworkState)?'.
+ - 'ZegoNetworkMode' 
+is from 'package:zego_e
+xpress_engine/src/zego_
+express_defines.dart' (
+'/C:/Users/Saro/AppData
+/Local/Pub/Cache/hosted
+/pub.dev/zego_express_e
+ngine-3.23.0/lib/src/ze
+go_express_defines.dart
+').
+ - 'ZegoUIKitNetworkSta
+te' is from 'package:ze
+go_uikit/src/services/d
+efines/network.dart' ('
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit-2.28
+.23/lib/src/services/de
+fines/network.dart').
+      ..add(ZegoUIKit()
+.getNetworkModeStream()
+.listen(onNetworkModeCh
+anged));
+                       
+                       
+        ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/component
+s/send_call_invitation_
+button.dart:281:18: 
+Error: The argument 
+type 'void 
+Function(String, 
+String, String, 
+List<String>)' can't 
+be assigned to the 
+parameter type 'void Fu
+nction(ZegoStartInvitat
+ionButtonResult)?'.
+ - 'List' is from 
+'dart:core'.
+ - 'ZegoStartInvitation
+ButtonResult' is from '
+package:zego_uikit/src/
+plugins/signaling/invit
+ation/components/start_
+invitation_button.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_uikit-2
+.28.23/lib/src/plugins/
+signaling/invitation/co
+mponents/start_invitati
+on_button.dart').
+      onPressed: 
+onPressed,
+                 ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit-2.28
+.23/lib/src/plugins/sig
+naling/uikit_signaling_
+plugin_impl.dart:121:49
+: Error: The method 
+'getRoomState' isn't 
+defined for the type 'Z
+egoSignalingPluginInter
+face'.
+ - 'ZegoSignalingPlugin
+Interface' is from 'pac
+kage:zego_plugin_adapte
+r/src/signaling/interfa
+ce.dart' ('/C:/Users/Sa
+ro/AppData/Local/Pub/Ca
+che/hosted/pub.dev/zego
+_plugin_adapter-2.14.2/
+lib/src/signaling/inter
+face.dart').
+Try correcting the 
+name to the name of an 
+existing method, or 
+defining a method 
+named 'getRoomState'.
+    return ZegoPluginAd
+apter().signalingPlugin
+!.getRoomState();
+                       
+                       
+  ^^^^^^^^^^^^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit-2.28
+.23/lib/src/services/de
+fines/express_extension
+.dart:81:36: Error: 
+Too few positional 
+arguments: 17 
+required, 15 given.
+    return ZegoPublishS
+treamQuality(
+                       
+            ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_express_en
+gine-3.23.0/lib/src/zeg
+o_express_defines.dart:
+2765:3: Context: Found 
+this candidate, but 
+the arguments don't 
+match.
+  ZegoPublishStreamQual
+ity(
+  ^^^^^^^^^^^^^^^^^^^^^
+^^^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/pages/inv
+itation_notify.dart:199
+:20: Error: The 
+argument type 'void 
+Function(String, 
+String)' can't be 
+assigned to the 
+parameter type 'void Fu
+nction(ZegoRefuseInvita
+tionButtonResult)?'.
+ - 'ZegoRefuseInvitatio
+nButtonResult' is from 
+'package:zego_uikit/src
+/plugins/signaling/invi
+tation/components/refus
+e_invitation_button.dar
+t' ('/C:/Users/Saro/App
+Data/Local/Pub/Cache/ho
+sted/pub.dev/zego_uikit
+-2.28.23/lib/src/plugin
+s/signaling/invitation/
+components/refuse_invit
+ation_button.dart').
+        onPressed: 
+(String code, String 
+message) {
+                   ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/pages/inv
+itation_notify.dart:226
+:20: Error: The 
+argument type 'void 
+Function(String, 
+String)' can't be 
+assigned to the 
+parameter type 'void Fu
+nction(ZegoAcceptInvita
+tionButtonResult)?'.
+ - 'ZegoAcceptInvitatio
+nButtonResult' is from 
+'package:zego_uikit/src
+/plugins/signaling/invi
+tation/components/accep
+t_invitation_button.dar
+t' ('/C:/Users/Saro/App
+Data/Local/Pub/Cache/ho
+sted/pub.dev/zego_uikit
+-2.28.23/lib/src/plugin
+s/signaling/invitation/
+components/accept_invit
+ation_button.dart').
+        onPressed: 
+(String code, String 
+message) {
+                   ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit-2.28
+.23/lib/src/plugins/sig
+naling/impl/service/cal
+lkit_service.dart:93:10
+: Error: A value of 
+type 'Stream<ZegoSignal
+ingPluginCallKitActionE
+vent>' can't be 
+returned from a 
+function with return 
+type 'Stream<ZegoSignal
+ingPluginCallKitSetMute
+dCallActionEvent>'.
+ - 'Stream' is from 
+'dart:async'.
+ - 'ZegoSignalingPlugin
+CallKitActionEvent' is 
+from 'package:zego_plug
+in_adapter/src/signalin
+g/callkit_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_plugin_
+adapter-2.14.2/lib/src/
+signaling/callkit_defin
+es.dart').
+ - 'ZegoSignalingPlugin
+CallKitSetMutedCallActi
+onEvent' is from 'packa
+ge:zego_plugin_adapter/
+src/signaling/callkit_d
+efines.dart' ('/C:/User
+s/Saro/AppData/Local/Pu
+b/Cache/hosted/pub.dev/
+zego_plugin_adapter-2.1
+4.2/lib/src/signaling/c
+allkit_defines.dart').
+        .getCallkitPerf
+ormSetMutedCallActionEv
+entStream();
+         ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit-2.28
+.23/lib/src/services/de
+fines/error.dart:118:14
+: Error: A non-null 
+value must be returned 
+since the return type 
+'int' doesn't allow 
+null.
+  static int fromZegoSc
+reenCaptureExceptionTyp
+e(
+             ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit-2.28
+.23/lib/src/plugins/sig
+naling/impl/core/data.d
+art:148:58: Error: The 
+argument type 
+'CXCallEndedReason' 
+can't be assigned to 
+the parameter type 'Zeg
+oSignalingPluginCXCallE
+ndedReason'.
+ - 'CXCallEndedReason' 
+is from 'package:zego_c
+allkit/src/zego_callkit
+_defines.dart' ('/C:/Us
+ers/Saro/AppData/Local/
+Pub/Cache/hosted/pub.de
+v/zego_callkit-1.0.0+6/
+lib/src/zego_callkit_de
+fines.dart').
+ - 'ZegoSignalingPlugin
+CXCallEndedReason' is 
+from 'package:zego_plug
+in_adapter/src/signalin
+g/callkit_defines.dart'
+ ('/C:/Users/Saro/AppDa
+ta/Local/Pub/Cache/host
+ed/pub.dev/zego_plugin_
+adapter-2.14.2/lib/src/
+signaling/callkit_defin
+es.dart').
+    ZegoPluginAdapter()
+.signalingPlugin!.repor
+tCallEnded(endedReason,
+ uuid);
+                       
+                       
+           ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit-2.28
+.23/lib/src/plugins/sig
+naling/impl/core/data.d
+art:148:71: Error: The 
+argument type 'UUID' 
+can't be assigned to 
+the parameter type 
+'String'.
+ - 'UUID' is from 'pack
+age:zego_callkit/src/ze
+go_callkit_defines.dart
+' ('/C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hos
+ted/pub.dev/zego_callki
+t-1.0.0+6/lib/src/zego_
+callkit_defines.dart').
+    ZegoPluginAdapter()
+.signalingPlugin!.repor
+tCallEnded(endedReason,
+ uuid);
+                       
+                       
+                       
+ ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/pages/cal
+ling/toolbar/invitee_bo
+ttom_toolbar.dart:107:1
+8: Error: The argument 
+type 'void 
+Function(String, 
+String)' can't be 
+assigned to the 
+parameter type 'void Fu
+nction(ZegoRefuseInvita
+tionButtonResult)?'.
+ - 'ZegoRefuseInvitatio
+nButtonResult' is from 
+'package:zego_uikit/src
+/plugins/signaling/invi
+tation/components/refus
+e_invitation_button.dar
+t' ('/C:/Users/Saro/App
+Data/Local/Pub/Cache/ho
+sted/pub.dev/zego_uikit
+-2.28.23/lib/src/plugin
+s/signaling/invitation/
+components/refuse_invit
+ation_button.dart').
+      onPressed: 
+(String code, String 
+message) {
+                 ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/pages/cal
+ling/toolbar/invitee_bo
+ttom_toolbar.dart:133:1
+8: Error: The argument 
+type 'void 
+Function(String, 
+String)' can't be 
+assigned to the 
+parameter type 'void Fu
+nction(ZegoAcceptInvita
+tionButtonResult)?'.
+ - 'ZegoAcceptInvitatio
+nButtonResult' is from 
+'package:zego_uikit/src
+/plugins/signaling/invi
+tation/components/accep
+t_invitation_button.dar
+t' ('/C:/Users/Saro/App
+Data/Local/Pub/Cache/ho
+sted/pub.dev/zego_uikit
+-2.28.23/lib/src/plugin
+s/signaling/invitation/
+components/accept_invit
+ation_button.dart').
+      onPressed: 
+(String code, String 
+message) {
+                 ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit_preb
+uilt_call-4.15.13/lib/s
+rc/invitation/pages/cal
+ling/toolbar/inviter_bo
+ttom_toolbar.dart:53:21
+: Error: The argument 
+type 'void 
+Function(String, 
+String, List<String>)' 
+can't be assigned to 
+the parameter type 
+'void Function(ZegoCanc
+elInvitationButtonResul
+t)?'.
+ - 'List' is from 
+'dart:core'.
+ - 'ZegoCancelInvitatio
+nButtonResult' is from 
+'package:zego_uikit/src
+/plugins/signaling/invi
+tation/components/cance
+l_invitation_button.dar
+t' ('/C:/Users/Saro/App
+Data/Local/Pub/Cache/ho
+sted/pub.dev/zego_uikit
+-2.28.23/lib/src/plugin
+s/signaling/invitation/
+components/cancel_invit
+ation_button.dart').
+                    
+(String code, String 
+message, List<String> 
+errorInvitees) {
+                    ^
+/C:/Users/Saro/AppData/
+Local/Pub/Cache/hosted/
+pub.dev/zego_uikit-2.28
+.23/lib/src/plugins/bea
+uty/impl/core/data.dart
+:37:11: Error: No 
+named parameter with 
+the name 'licence'.
+          licence: 
+licence,
+          ^^^^^^^
+Target kernel_snapshot_
+program failed: 
+Exception
+
+
+FAILURE: Build failed 
+with an exception.
+
+* What went wrong:
+Execution failed for 
+task ':app:compileFlutt
+erBuildRelease'.
+> Process 'command 'D:\
+FLUTTER\flutter\bin\flu
+tter.bat'' finished 
+with non-zero exit 
+value 1
+
+* Try:
+> Run with 
+--stacktrace option to 
+get the stack trace.
+> Run with --info or 
+--debug option to get 
+more log output.
+> Run with --scan to 
+get full insights.
+> Get more help at http
+s://help.gradle.org.
+
+BUILD FAILED in 50s
+Running Gradle task 'assembleRelease'...                           51.5s
+Gradle task 
+assembleRelease failed 
+with exit code 1

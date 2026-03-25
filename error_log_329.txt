@@ -1,0 +1,199 @@
+﻿Running Gradle task 'assembleRelease'...                        
+flutter : Warning: 
+Flutter support for 
+your project's Gradle 
+version (8.3.0) will 
+soon be dropped. 
+Please upgrade your 
+Gradle version to a 
+version of at least 
+8.7.0 soon.
+At line:1 char:1
++ flutter build apk > 
+build_out.txt 2>&1 ; 
+Get-Content 
+build_out.txt -E ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Warning: Flut   
+ te...ast 8.7.0 soo    
+n.:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+Alternatively, use the 
+flag "--android-skip-bu
+ild-dependency-validati
+on" to bypass this 
+check.
+
+Potential fix: Your 
+project's gradle 
+version is typically 
+defined in the gradle 
+wrapper file. By 
+default, this can be 
+found at 
+E:\PROJECTS\Wellness Wi
+ngs\android/gradle/wrap
+per/gradle-wrapper.prop
+erties. 
+For more information, 
+see https://docs.gradle
+.org/current/userguide/
+gradle_wrapper.html.
+
+Warning: Flutter 
+support for your 
+project's Android 
+Gradle Plugin version 
+(Android Gradle Plugin 
+version 8.2.1) will 
+soon be dropped. 
+Please upgrade your 
+Android Gradle Plugin 
+version to a version 
+of at least Android 
+Gradle Plugin version 
+8.6.0 soon.
+Alternatively, use the 
+flag "--android-skip-bu
+ild-dependency-validati
+on" to bypass this 
+check.
+
+Potential fix: Your 
+project's AGP version 
+is typically defined 
+in the plugins block 
+of the 
+`settings.gradle` file 
+(E:\PROJECTS\Wellness W
+ings\android/settings.g
+radle), by a plugin 
+with the id of com.andr
+oid.application. 
+If you don't see a 
+plugins block, your 
+project was likely 
+created with an older 
+template version. In 
+this case it is most 
+likely defined in the 
+top-level build.gradle 
+file 
+(E:\PROJECTS\Wellness W
+ings\android/build.grad
+le) by the following 
+line in the 
+dependencies block of 
+the buildscript: 
+"classpath 'com.android
+.tools.build:gradle:<ve
+rsion>'".
+
+Warning: Flutter 
+support for your 
+project's Kotlin 
+version (1.8.22) will 
+soon be dropped. 
+Please upgrade your 
+Kotlin version to a 
+version of at least 
+2.1.0 soon.
+Alternatively, use the 
+flag "--android-skip-bu
+ild-dependency-validati
+on" to bypass this 
+check.
+
+Potential fix: Your 
+project's KGP version 
+is typically defined 
+in the plugins block 
+of the 
+`settings.gradle` file 
+(E:\PROJECTS\Wellness W
+ings\android/settings.g
+radle), by a plugin 
+with the id of org.jetb
+rains.kotlin.android. 
+If you don't see a 
+plugins block, your 
+project was likely 
+created with an older 
+template version, in 
+which case it is most 
+likely defined in the 
+top-level build.gradle 
+file 
+(E:\PROJECTS\Wellness W
+ings\android/build.grad
+le) by the 
+ext.kotlin_version 
+property.
+
+[ZEGO][PLUGIN] Download native dependency
+[ZEGO][PLUGIN] Native version: 3.23.0.47729
+[ZEGO][PLUGIN] The specified version SDK already exists!
+lib/screens/elderly_log
+in_page.dart:112:58: 
+Error: Required named 
+parameter 'plugins' 
+must be provided.
+            ZegoUIKitPr
+ebuiltCallInvitationSer
+vice().init(
+                       
+                       
+           ^
+lib/screens/volunteer_l
+ogin_page.dart:145:58: 
+Error: Required named 
+parameter 'plugins' 
+must be provided.
+            ZegoUIKitPr
+ebuiltCallInvitationSer
+vice().init(
+                       
+                       
+           ^
+Target kernel_snapshot_
+program failed: 
+Exception
+
+
+FAILURE: Build failed 
+with an exception.
+
+* What went wrong:
+Execution failed for 
+task ':app:compileFlutt
+erBuildRelease'.
+> Process 'command 'D:\
+FLUTTER\flutter\bin\flu
+tter.bat'' finished 
+with non-zero exit 
+value 1
+
+* Try:
+> Run with 
+--stacktrace option to 
+get the stack trace.
+> Run with --info or 
+--debug option to get 
+more log output.
+> Run with --scan to 
+get full insights.
+> Get more help at http
+s://help.gradle.org.
+
+BUILD FAILED in 51s
+Running Gradle task 'assembleRelease'...                           53.2s
+Gradle task 
+assembleRelease failed 
+with exit code 1

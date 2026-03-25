@@ -3,6 +3,7 @@ import 'package:wellness_wings/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class VolunteerLoginPage extends StatefulWidget {
   const VolunteerLoginPage({super.key});
@@ -139,6 +140,14 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
             if (!mounted) return;
             // Update location before navigating
             await _updateLocation(int.parse(user['id'].toString()));
+            
+            // Initialize ZegoCloud for Volunteer to receive/make calls
+            ZegoUIKitPrebuiltCallInvitationService().init(
+              appID: 494787214,
+              appSign: 'feea80e8886ee2d1bd26d1ad0bb6c0b41152ec75b2b952d07261600211bf60cd',
+              userID: 'volunteer_${user['id']}',
+              userName: user['full_name'] ?? 'Volunteer',
+            );
             
             Navigator.pushReplacementNamed(
               context,

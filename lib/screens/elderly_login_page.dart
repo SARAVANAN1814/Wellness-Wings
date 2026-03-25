@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class ElderlyLoginPage extends StatefulWidget {
   const ElderlyLoginPage({super.key});
@@ -106,6 +107,14 @@ class _ElderlyLoginPageState extends State<ElderlyLoginPage> {
           final user = result['user'];
           if (user != null && user['id'] != null) {
             await _updateLocation(int.parse(user['id'].toString()));
+            
+            // Initialize ZegoCloud for Elderly user to receive/make calls
+            ZegoUIKitPrebuiltCallInvitationService().init(
+              appID: 494787214,
+              appSign: 'feea80e8886ee2d1bd26d1ad0bb6c0b41152ec75b2b952d07261600211bf60cd',
+              userID: 'elderly_${user['id']}',
+              userName: user['full_name'] ?? 'Elderly User',
+            );
           }
           Navigator.pushReplacementNamed(context, '/elderly_purpose_selection');
         } else {

@@ -12,8 +12,15 @@ import 'screens/volunteer_bookings_page.dart';
 import 'screens/admin_login_page.dart';
 import 'screens/admin_dashboard_page.dart';
 import 'screens/admin_volunteer_details_page.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+  
+  ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI([]);
   runApp(const WellnessWingsApp());
 }
 
@@ -23,6 +30,7 @@ class WellnessWingsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Wellness Wings',
       theme: ThemeData(

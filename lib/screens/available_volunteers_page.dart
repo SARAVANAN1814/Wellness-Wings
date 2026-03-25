@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:wellness_wings/screens/booking_confirmation_page.dart';
 import '../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -477,16 +480,59 @@ Thank you.''';
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                        const SizedBox(height: 8),
-                                        _buildInfoRow(
-                                          Icons.phone_rounded,
-                                          volunteer['phone_number'] ?? 'Not available',
-                                        ),
-                                        const SizedBox(height: 4),
-                                        _buildInfoRow(
-                                          Icons.location_on_rounded,
-                                          volunteer['place'] ?? 'Location not available',
-                                        ),
+                                        const SizedBox(height: 12),
+                                        if (volunteer['latitude'] != null && volunteer['longitude'] != null)
+                                          Container(
+                                            height: 90,
+                                            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(color: Colors.teal.shade200, width: 2),
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(10),
+                                              child: FlutterMap(
+                                                options: MapOptions(
+                                                  initialCenter: LatLng(
+                                                    volunteer['latitude'] is String ? double.parse(volunteer['latitude']) : volunteer['latitude'].toDouble(),
+                                                    volunteer['longitude'] is String ? double.parse(volunteer['longitude']) : volunteer['longitude'].toDouble(),
+                                                  ),
+                                                  initialZoom: 14.0,
+                                                  interactionOptions: const InteractionOptions(
+                                                    flags: InteractiveFlag.none, // Make it a static preview map
+                                                  ),
+                                                ),
+                                                children: [
+                                                  TileLayer(
+                                                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                                    userAgentPackageName: 'com.wellnesswings.app',
+                                                  ),
+                                                  MarkerLayer(
+                                                    markers: [
+                                                      Marker(
+                                                        point: LatLng(
+                                                          volunteer['latitude'] is String ? double.parse(volunteer['latitude']) : volunteer['latitude'].toDouble(),
+                                                          volunteer['longitude'] is String ? double.parse(volunteer['longitude']) : volunteer['longitude'].toDouble(),
+                                                        ),
+                                                        width: 40,
+                                                        height: 40,
+                                                        child: const Icon(
+                                                          Icons.location_on,
+                                                          color: Colors.red,
+                                                          size: 30,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          )
+                                        else
+                                          const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text('Location not available', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                          ),
                                         const SizedBox(height: 8),
                                         Container(
                                           padding: const EdgeInsets.symmetric(
@@ -507,7 +553,8 @@ Thank you.''';
                                           ),
                                         ),
                                         if (volunteer['has_experience'] == true &&
-                                            volunteer['experience_details'] != null)
+                                            volunteer['experience_details'] != null &&
+                                            volunteer['experience_details'].toString().isNotEmpty)
                                           Padding(
                                             padding: const EdgeInsets.only(top: 4),
                                             child: Text(
@@ -522,7 +569,7 @@ Thank you.''';
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
-                                        const SizedBox(height: 12),
+                                        const Spacer(),
                                         Row(
                                           children: [
                                             Expanded(
@@ -530,14 +577,17 @@ Thank you.''';
                                                 icon: Icons.phone_rounded,
                                                 label: 'Call',
                                                 color: Colors.green.shade600,
-                                                onPressed: () async {
-                                                  final phoneNumber = volunteer['phone_number'];
-                                                  if (phoneNumber != null) {
-                                                    final url = Uri.parse('tel:$phoneNumber');
-                                                    if (await canLaunchUrl(url)) {
-                                                      await launchUrl(url);
-                                                    }
-                                                  }
+                                                onPressed: () {
+                                                  // Secure Anonymous Voice Call via ZegoCloud 
+                                                  ZegoUIKitPrebuiltCallInvitationService().send(
+                                                    invitees: [
+                                                      ZegoCallUser(
+                                                        'volunteer_${volunteer['id']}',
+                                                        volunteer['full_name'] ?? 'Volunteer',
+                                                      ),
+                                                    ],
+                                                    isVideoCall: false,
+                                                  );
                                                 },
                                               ),
                                             ),
