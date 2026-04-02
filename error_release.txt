@@ -1,0 +1,1594 @@
+﻿Running Gradle task 'assembleRelease'...                        
+flutter : Warning: Flutter 
+support for your project's 
+Gradle version (8.3.0) will 
+soon be dropped. Please 
+upgrade your Gradle version 
+to a version of at least 
+8.7.0 soon.
+At line:1 char:1
++ flutter build apk 
+--release > build_out.txt 
+2>&1 ; Get-Content build_ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecifi    ed: 
+(Warning: Flut    te...ast 
+8.7.0 soo    n.:String) [], 
+Rem    oteException
+    + FullyQualifiedEr    
+rorId : NativeComm    
+andError
+ 
+Alternatively, use the flag "
+--android-skip-build-dependen
+cy-validation" to bypass 
+this check.
+
+Potential fix: Your 
+project's gradle version is 
+typically defined in the 
+gradle wrapper file. By 
+default, this can be found 
+at E:\PROJECTS\Wellness Wings
+\android/gradle/wrapper/gradl
+e-wrapper.properties. 
+For more information, see htt
+ps://docs.gradle.org/current/
+userguide/gradle_wrapper.html
+.
+
+Warning: Flutter support for 
+your project's Android 
+Gradle Plugin version 
+(Android Gradle Plugin 
+version 8.2.1) will soon be 
+dropped. Please upgrade your 
+Android Gradle Plugin 
+version to a version of at 
+least Android Gradle Plugin 
+version 8.6.0 soon.
+Alternatively, use the flag "
+--android-skip-build-dependen
+cy-validation" to bypass 
+this check.
+
+Potential fix: Your 
+project's AGP version is 
+typically defined in the 
+plugins block of the 
+`settings.gradle` file 
+(E:\PROJECTS\Wellness Wings\a
+ndroid/settings.gradle), by 
+a plugin with the id of 
+com.android.application. 
+If you don't see a plugins 
+block, your project was 
+likely created with an older 
+template version. In this 
+case it is most likely 
+defined in the top-level 
+build.gradle file 
+(E:\PROJECTS\Wellness 
+Wings\android/build.gradle) 
+by the following line in the 
+dependencies block of the 
+buildscript: "classpath 'com.
+android.tools.build:gradle:<v
+ersion>'".
+
+Warning: Flutter support for 
+your project's Kotlin 
+version (1.8.22) will soon 
+be dropped. Please upgrade 
+your Kotlin version to a 
+version of at least 2.1.0 
+soon.
+Alternatively, use the flag "
+--android-skip-build-dependen
+cy-validation" to bypass 
+this check.
+
+Potential fix: Your 
+project's KGP version is 
+typically defined in the 
+plugins block of the 
+`settings.gradle` file 
+(E:\PROJECTS\Wellness Wings\a
+ndroid/settings.gradle), by 
+a plugin with the id of org.j
+etbrains.kotlin.android. 
+If you don't see a plugins 
+block, your project was 
+likely created with an older 
+template version, in which 
+case it is most likely 
+defined in the top-level 
+build.gradle file 
+(E:\PROJECTS\Wellness 
+Wings\android/build.gradle) 
+by the ext.kotlin_version 
+property.
+
+[ZEGO][PLUGIN] Download native dependency
+[ZEGO][PLUGIN] Native version: 3.23.0.47729
+[ZEGO][PLUGIN] The specified version SDK already exists!
+warning: [options] source 
+value 8 is obsolete and will 
+be removed in a future 
+release
+warning: [options] target 
+value 8 is obsolete and will 
+be removed in a future 
+release
+warning: [options] To 
+suppress warnings about 
+obsolete options, use 
+-Xlint:-options.
+e: Incompatible classes were 
+found in dependencies. 
+Remove them from the 
+classpath or use '-Xskip-meta
+data-version-check' to 
+suppress errors
+e: file:///C:/Users/Saro/.gra
+dle/caches/transforms-3/27f18
+ef4f7fbea709a2e48adcd9afcb0/t
+ransformed/jetified-kotlin-st
+dlib-2.2.0.jar!/META-INF/kotl
+in-stdlib-jdk7.kotlin_moduleM
+odule was compiled with an 
+incompatible version of 
+Kotlin. The binary version 
+of its metadata is 2.2.0, 
+expected version is 1.8.0.
+e: file:///C:/Users/Saro/.gra
+dle/caches/transforms-3/27f18
+ef4f7fbea709a2e48adcd9afcb0/t
+ransformed/jetified-kotlin-st
+dlib-2.2.0.jar!/META-INF/kotl
+in-stdlib-jdk8.kotlin_moduleM
+odule was compiled with an 
+incompatible version of 
+Kotlin. The binary version 
+of its metadata is 2.2.0, 
+expected version is 1.8.0.
+e: file:///C:/Users/Saro/.gra
+dle/caches/transforms-3/27f18
+ef4f7fbea709a2e48adcd9afcb0/t
+ransformed/jetified-kotlin-st
+dlib-2.2.0.jar!/META-INF/kotl
+in-stdlib.kotlin_moduleModule
+ was compiled with an 
+incompatible version of 
+Kotlin. The binary version 
+of its metadata is 2.2.0, 
+expected version is 1.8.0.
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:14:9 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:21:21 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:23:9 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:24:13 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:26:27 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:30:21 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:32:32 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:35:21 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:36:20 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:45:20 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:49:6 Class 
+'kotlin.jvm.Throws' was 
+compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/jvm/Throws.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/MethodC
+allHandler.kt:51:9 
+Unresolved reference: require
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:24:46 Unresolved 
+reference: lazy
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:34:49 Unresolved 
+reference: lazy
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:55:14 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:58:6 Class 
+'kotlin.jvm.Throws' was 
+compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/jvm/Throws.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:60:9 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:66:55 Unresolved 
+reference: filterIsInstance
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:67:63 Unresolved 
+reference: filterIsInstance
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:73:25 Unresolved 
+reference: apply
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:74:17 Unresolved 
+reference: action
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:75:17 Unresolved 
+reference: type
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:76:17 Unresolved 
+reference: putExtra
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:77:30 Unresolved 
+reference: isNullOrBlank
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:77:47 Unresolved 
+reference: putExtra
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:78:28 Unresolved 
+reference: isNullOrBlank
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:78:45 Unresolved 
+reference: putExtra
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:92:33 Unresolved 
+reference: apply
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:93:25 Unresolved 
+reference: action
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:94:25 Unresolved 
+reference: type
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:95:25 Unresolved 
+reference: putExtra
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:100:33 Unresolved 
+reference: apply
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:101:25 Unresolved 
+reference: action
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:102:25 Unresolved 
+reference: type
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:103:25 Unresolved 
+reference: 
+putParcelableArrayListExtra
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:108:25 Unresolved 
+reference: apply
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:109:27 Unresolved 
+reference: isNullOrBlank
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:109:44 Unresolved 
+reference: putExtra
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:110:30 Unresolved 
+reference: isNullOrBlank
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:110:47 Unresolved 
+reference: putExtra
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:111:28 Unresolved 
+reference: isNullOrBlank
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:111:45 Unresolved 
+reference: putExtra
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:112:17 Unresolved 
+reference: addFlags
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:126:71 Unresolved 
+reference: java
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:139:25 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:141:36 Cannot infer a type 
+for this parameter. Please 
+specify it explicitly.
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:142:34 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:152:9 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:156:9 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:157:13 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:158:28 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:160:28 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:166:25 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:168:21 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:172:6 Class 
+'kotlin.jvm.Throws' was 
+compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/jvm/Throws.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:173:55 Unresolved 
+reference: ArrayList
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:174:20 Unresolved 
+reference: ArrayList
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:175:15 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:193:51 Expression 'first' 
+of type 'String!' cannot be 
+invoked as a function. The 
+function 'invoke()' is not 
+found
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:195:40 Expression 'first' 
+of type 'String!' cannot be 
+invoked as a function. The 
+function 'invoke()' is not 
+found
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:196:19 Class 'kotlin.collec
+tions.IntIterator' was 
+compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/collections/IntIterat
+or.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:196:20 Class 
+'kotlin.ranges.IntRange' was 
+compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/ranges/IntRange.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:196:32 Unresolved 
+reference: lastIndex
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:198:17 Class 'kotlin.Unit' 
+was compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:213:50 Unresolved 
+reference: contains
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:216:22 Unresolved 
+reference: substring
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:216:44 Unresolved 
+reference: indexOf
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:223:22 Unresolved 
+reference: startsWith
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:232:39 Unresolved 
+reference: isNullOrEmpty
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:233:19 Unresolved 
+reference: forEach
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:233:29 Unresolved 
+reference: it
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:238:6 Class 
+'kotlin.jvm.Throws' was 
+compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/jvm/Throws.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/Share.k
+t:245:14 Unresolved 
+reference: copyTo
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPendingIntent.kt:30:20 Not 
+enough information to infer 
+type variable T
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPendingIntent.kt:30:91 
+Unresolved reference: java
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPendingIntent.kt:33:14 
+Class 'kotlin.Suppress' was 
+compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Suppress.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPendingIntent.kt:34:20 Not 
+enough information to infer 
+type variable T
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPendingIntent.kt:39:13 
+Class 'kotlin.Unit' was 
+compiled with an 
+incompatible version of 
+Kotlin. The actual metadata 
+version is 2.2.0, but the 
+compiler version 1.8.0 can 
+read versions up to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:16:9 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:17:9 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:18:9 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:20:23 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:24:23 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:28:17 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:29:15 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:33:15 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:37:9 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/SharePl
+usPlugin.kt:41:9 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:21:16 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:23:36 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:24:26 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:25:18 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:30:28 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:33:36 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:34:26 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:35:18 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:43:9 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:50:22 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:51:9 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:59:24 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:60:13 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+e: file:///C:/Users/Saro/AppD
+ata/Local/Pub/Cache/hosted/pu
+b.dev/share_plus-12.0.1/andro
+id/src/main/kotlin/dev/flutte
+rcommunity/plus/share/ShareSu
+ccessManager.kt:70:13 Class 
+'kotlin.Unit' was compiled 
+with an incompatible version 
+of Kotlin. The actual 
+metadata version is 2.2.0, 
+but the compiler version 
+1.8.0 can read versions up 
+to 1.9.0.
+The class is loaded from C:/U
+sers/Saro/.gradle/caches/tran
+sforms-3/27f18ef4f7fbea709a2e
+48adcd9afcb0/transformed/jeti
+fied-kotlin-stdlib-2.2.0.jar!
+/kotlin/Unit.class
+Note: Some input files use 
+or override a deprecated API.
+Note: Recompile with 
+-Xlint:deprecation for 
+details.
+Note: Some input files use 
+unchecked or unsafe 
+operations.
+Note: Recompile with 
+-Xlint:unchecked for details.
+3 warnings
+
+FAILURE: Build failed with 
+an exception.
+
+* What went wrong:
+Execution failed for task ':s
+hare_plus:compileReleaseKotli
+n'.
+> A failure occurred while 
+executing org.jetbrains.kotli
+n.compilerRunner.GradleCompil
+erRunnerWithWorkers$GradleKot
+linCompilerWorkAction
+   > Compilation error. See 
+log for more details
+
+* Try:
+> Run with --stacktrace 
+option to get the stack 
+trace.
+> Run with --info or --debug 
+option to get more log 
+output.
+> Run with --scan to get 
+full insights.
+> Get more help at 
+https://help.gradle.org.
+
+BUILD FAILED in 45s
+Running Gradle task 'assembleRelease'...                           46.6s
+
+ΓöîΓöÇ Flutter Fix ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé [!] Your project requires a newer version of the Kotlin Gradle plugin.                       Γöé
+Γöé Find the latest version on https://kotlinlang.org/docs/releases.html#release-details, then   Γöé
+Γöé update the                                                                                   Γöé
+Γöé version number of the plugin with id "org.jetbrains.kotlin.android" in the plugins block of  Γöé
+Γöé E:\PROJECTS\Wellness Wings\android\settings.gradle.                                          Γöé
+Γöé                                                                                              Γöé
+Γöé Alternatively (if your project was created before Flutter 3.19), update                      Γöé
+Γöé E:\PROJECTS\Wellness Wings\android\build.gradle                                              Γöé
+Γöé ext.kotlin_version = '<latest-version>'                                                      Γöé
+ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ
+Gradle task assembleRelease 
+failed with exit code 1

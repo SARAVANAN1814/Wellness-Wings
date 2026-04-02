@@ -1,0 +1,329 @@
+﻿Running Gradle task 'assembleRelease'...                        
+[ZEGO][PLUGIN] Download native dependency
+[ZEGO][PLUGIN] Native version: 3.23.0.47729
+[ZEGO][PLUGIN] The specified version SDK already exists!
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 13564 bytes (99.2% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+flutter : The message 
+received from the 
+daemon indicates that 
+the daemon has 
+disappeared.
+At line:1 char:1
++ flutter build apk 
+--release > 
+build_out.txt 2>&1 ; 
+Get-Content build_ ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
+    + CategoryInfo     
+         : 
+NotSpecified: (The mes 
+   sage rec...as 
+disappeare    
+d.:String) [], 
+RemoteExc    eption
+    + 
+FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+Build request sent: Bui
+ld{id=178ec3b5-15bc-419
+f-973a-a0caa4bd4652, cu
+rrentDir=E:\PROJECTS\We
+llness Wings\android}
+Attempting to read 
+last messages from the 
+daemon log...
+Daemon pid: 13088
+  log file: C:\Users\Sa
+ro\.gradle\daemon\8.11.
+1\daemon-13088.out.log
+----- Last 20 lines 
+from daemon log file - 
+daemon-13088.out.log 
+-----
+2026-03-25T11:35:04.102
++0530 [DEBUG] [org.grad
+le.launcher.daemon.serv
+er.DaemonStateCoordinat
+or] Command execution: 
+started DaemonCommandEx
+ecution[command = Build
+{id=178ec3b5-15bc-419f-
+973a-a0caa4bd4652, curr
+entDir=E:\PROJECTS\Well
+ness Wings\android}, 
+connection = DefaultDae
+monConnection: socket 
+connection from 
+/127.0.0.1:55973 to 
+/127.0.0.1:55974] 
+after 
+0.005566666666666667 
+minutes of idle
+2026-03-25T11:35:04.103
++0530 [INFO] [org.gradl
+e.launcher.daemon.serve
+r.DaemonRegistryUpdater
+] Marking the daemon 
+as busy, address: [fbaa
+970b-cc92-44f8-abf7-9b1
+43c0e1fe3 port:55973, a
+ddresses:[localhost/127
+.0.0.1]]
+2026-03-25T11:35:04.103
++0530 [DEBUG] [org.grad
+le.launcher.daemon.regi
+stry.PersistentDaemonRe
+gistry] Marking busy 
+by address: [fbaa970b-c
+c92-44f8-abf7-9b143c0e1
+fe3 port:55973, address
+es:[localhost/127.0.0.1
+]]
+2026-03-25T11:35:04.105
++0530 [DEBUG] [org.grad
+le.cache.internal.Defau
+ltFileLockManager] 
+Waiting to acquire 
+exclusive lock on 
+daemon addresses 
+registry.
+2026-03-25T11:35:04.105
++0530 [DEBUG] [org.grad
+le.cache.internal.Defau
+ltFileLockManager] 
+Lock acquired on 
+daemon addresses 
+registry.
+2026-03-25T11:35:04.107
++0530 [DEBUG] [org.grad
+le.cache.internal.Defau
+ltFileLockManager] 
+Releasing lock on 
+daemon addresses 
+registry.
+2026-03-25T11:35:04.108
++0530 [DEBUG] [org.grad
+le.launcher.daemon.serv
+er.DaemonStateCoordinat
+or] resetting idle 
+timer
+2026-03-25T11:35:04.108
++0530 [DEBUG] [org.grad
+le.launcher.daemon.serv
+er.DaemonStateCoordinat
+or] daemon is running. 
+Sleeping until state 
+changes.
+2026-03-25T11:35:04.109
++0530 [INFO] [org.gradl
+e.launcher.daemon.serve
+r.exec.StartBuildOrResp
+ondWithBusy] Daemon is 
+about to start 
+building Build{id=178ec
+3b5-15bc-419f-973a-a0ca
+a4bd4652, currentDir=E:
+\PROJECTS\Wellness 
+Wings\android}. 
+Dispatching build 
+started information...
+2026-03-25T11:35:04.110
++0530 [DEBUG] [org.grad
+le.launcher.daemon.serv
+er.SynchronizedDispatch
+Connection] thread 39: 
+dispatching org.gradle.
+launcher.daemon.protoco
+l.BuildStarted@60e881b6
+2026-03-25T11:35:04.112
++0530 [DEBUG] [org.grad
+le.launcher.daemon.serv
+er.exec.EstablishBuildE
+nvironment] 
+Configuring env 
+variables: [PATH, USERD
+OMAIN_ROAMINGPROFILE, 
+PROCESSOR_LEVEL, 
+SYSTEMDRIVE, 
+POWERSHELL_EXECUTABLE, 
+SESSIONNAME, 
+ALLUSERSPROFILE, 
+PLATFORMCODE, PROCESSOR
+_ARCHITECTURE, 
+AMDRMSDKPATH, VSCODE_PY
+THON_AUTOACTIVATE_GUARD
+, 
+VSCODE_GIT_IPC_HANDLE, 
+DRIVERDATA, =E:, 
+PROGRAMFILES, 
+VSCODE_INJECTION, 
+PSMODULEPATH, 
+COLORTERM, 
+PROGRAMDATA, DIRNAME, C
+HOCOLATEYLASTPATHUPDATE
+, USERNAME, VSCODE_GIT_
+ASKPASS_NODE, 
+TERM_PROGRAM_VERSION, 
+CMD_LINE_ARGS, 
+GIT_ASKPASS, CHROME_CRA
+SHPAD_PIPE_NAME, 
+EXIT_WITH_ERRORLEVEL, 
+ONEDRIVE, APP_HOME, 
+MINGIT_PATH, PATHEXT, 
+PAGER, 
+ONEDRIVECONSUMER, 
+SNAPSHOT_PATH, 
+REGIONCODE, 
+SHARED_BIN, WINDIR, 
+HOMEPATH, 
+PROCESSOR_IDENTIFIER, 
+PUBLIC, CACHE_DIR, 
+_SKIP, LOCALAPPDATA, CO
+MMONPROGRAMFILES(X86), 
+USERDOMAIN, 
+DART_SDK_PATH, 
+EFC_11272_1592913036, 
+LOGONSERVER, 
+JAVA_HOME, 
+FLUTTER_TOOLS_DIR, 
+PROMPT, 
+PROGRAMFILES(X86), 
+FLUTTER_ROOT, LANG, 
+ONLINESERVICES, 
+INTELLIJ IDEA, VSCODE_G
+IT_ASKPASS_MAIN, 
+APPDATA, PROGRAMW6432, 
+SYSTEMROOT, JAVA_EXE, 
+CHOCOLATEYINSTALL, VSCO
+DE_GIT_ASKPASS_EXTRA_AR
+GS, 
+VBOX_MSI_INSTALL_PATH, 
+DART, 
+ANTIGRAVITY_CLI_ALIAS, 
+OS, TERM_PROGRAM, VSCOD
+E_JDWP_ADAPTER_ENDPOINT
+S, COMMONPROGRAMW6432, 
+COMPUTERNAME, 
+COMMONPROGRAMFILES, 
+COMSPEC, 
+PROCESSOR_REVISION, 
+CLASSPATH, 
+APP_BASE_NAME, TEMP, FL
+UTTER_ALREADY_LOCKED, 
+HOMEDRIVE, 
+USERPROFILE, TMP, 
+NUMBER_OF_PROCESSORS, 
+ANTIGRAVITY_AGENT]
+2026-03-25T11:35:04.120
++0530 [DEBUG] [org.grad
+le.launcher.daemon.serv
+er.exec.LogToClient] 
+About to start 
+relaying all logs to 
+the client via the 
+connection.
+2026-03-25T11:35:04.120
++0530 [INFO] [org.gradl
+e.launcher.daemon.serve
+r.exec.LogToClient] 
+The client will now 
+receive all logging 
+from the daemon (pid: 
+13088). The daemon log 
+file: C:\Users\Saro\.gr
+adle\daemon\8.11.1\daem
+on-13088.out.log
+2026-03-25T11:35:04.123
++0530 [INFO] [org.gradl
+e.launcher.daemon.serve
+r.exec.LogAndCheckHealt
+h] Starting build in 
+new daemon [memory: 4 
+GiB]
+2026-03-25T11:35:04.126
++0530 [DEBUG] [org.grad
+le.launcher.daemon.serv
+er.exec.ExecuteBuild] 
+The daemon has started 
+executing the build.
+2026-03-25T11:35:04.126
++0530 [DEBUG] [org.grad
+le.launcher.daemon.serv
+er.exec.ExecuteBuild] 
+Executing build with 
+daemon context: Default
+DaemonContext[uid=d0a97
+9f6-240c-4ae3-8ba3-531f
+b118394c,javaHome=D:\An
+droid studio\New folder
+\jbr,javaVersion=21,jav
+aVendor=JetBrains s.r.o
+.,daemonRegistryDir=C:\
+Users\Saro\.gradle\daem
+on,pid=13088,idleTimeou
+t=10800000,priority=NOR
+MAL,applyInstrumentatio
+nAgent=true,nativeServi
+cesMode=ENABLED,daemonO
+pts=-XX:MaxMetaspaceSiz
+e=2G,-XX:+HeapDumpOnOut
+OfMemoryError,-Xmx4G,-D
+file.encoding=UTF-8,-Du
+ser.country=IN,-Duser.l
+anguage=en,-Duser.varia
+nt]
+[ZEGO][PLUGIN] 
+Download native 
+dependency
+[ZEGO][PLUGIN] Native 
+version: 3.23.0.47729
+[ZEGO][PLUGIN] The 
+specified version SDK 
+already exists!
+Font asset "MaterialIco
+ns-Regular.otf" was 
+tree-shaken, reducing 
+it from 1645184 to 
+13564 bytes (99.2% 
+reduction). 
+Tree-shaking can be 
+disabled by providing 
+the 
+--no-tree-shake-icons 
+flag when building 
+your app.----- End of 
+the daemon log -----
+
+JVM crash log found: fi
+le:///E:/PROJECTS/Welln
+ess%20Wings/android/hs_
+err_pid13088.log
+
+FAILURE: Build failed 
+with an exception.
+
+* What went wrong:
+Gradle build daemon 
+disappeared 
+unexpectedly (it may 
+have been killed or 
+may have crashed)
+
+* Try:
+> Run with 
+--stacktrace option to 
+get the stack trace.
+> Run with --info or 
+--debug option to get 
+more log output.
+> Run with --scan to 
+get full insights.
+> Get more help at http
+s://help.gradle.org.
+Running Gradle task 'assembleRelease'...                          600.0s
+Gradle task 
+assembleRelease failed 
+with exit code 1

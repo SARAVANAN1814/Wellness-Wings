@@ -147,6 +147,7 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
               appSign: 'feea80e8886ee2d1bd26d1ad0bb6c0b41152ec75b2b952d07261600211bf60cd',
               userID: 'volunteer_${user['id']}',
               userName: user['full_name'] ?? 'Volunteer',
+              plugins: [],
             );
             
             Navigator.pushReplacementNamed(

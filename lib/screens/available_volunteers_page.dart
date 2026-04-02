@@ -383,7 +383,7 @@ Thank you.''';
                             child: GridView.builder(
                               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: 0.60,
+                                childAspectRatio: 0.55,
                                 crossAxisSpacing: 12,
                                 mainAxisSpacing: 16,
                               ),
