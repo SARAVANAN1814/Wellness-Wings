@@ -530,54 +530,7 @@ router.get('/requests/:volunteerId', async (req, res) => {
     }
 });
 
-// Get Volunteer Bookings
-router.get('/bookings/:volunteerId', async (req, res) => {
-    try {
-        const { volunteerId } = req.params;
-        
-        const query = `
-            SELECT 
-                b.id as booking_id,
-                b.booking_time,
-                b.status,
-                b.service_type,
-                b.description,
-                b.is_emergency,
-                b.elderly_id,
-                e.full_name as elderly_name,
-                e.phone_number as elderly_phone,
-                e.address
-            FROM bookings b
-            JOIN elderly_users e ON b.elderly_id = e.id
-            WHERE b.volunteer_id = $1
-            ORDER BY b.booking_time DESC
-        `;
-        
-        console.log('Fetching bookings for volunteer:', volunteerId); // For debugging
-        
-        const result = await pool.query(query, [volunteerId]);
-        
-        console.log('Query result:', result.rows); // For debugging
-
-        res.json({
-            success: true,
-            bookings: result.rows.map(booking => ({
-                ...booking,
-                booking_time: booking.booking_time.toISOString(),
-            }))
-        });
-
-    } catch (error) {
-        console.error('Error fetching volunteer bookings:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch bookings',
-            error: error.message
-        });
-    }
-});
-
-// Get Booking Status by ID
+// Get Booking Status by ID (MUST be before /bookings/:volunteerId to avoid route conflict)
 router.get('/bookings/status/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -607,6 +560,53 @@ router.get('/bookings/status/:id', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to fetch booking status',
+            error: error.message
+        });
+    }
+});
+
+// Get Volunteer Bookings
+router.get('/bookings/:volunteerId', async (req, res) => {
+    try {
+        const { volunteerId } = req.params;
+        
+        const query = `
+            SELECT 
+                b.id as booking_id,
+                b.booking_time,
+                b.status,
+                b.service_type,
+                b.description,
+                b.is_emergency,
+                b.elderly_id,
+                e.full_name as elderly_name,
+                e.phone_number as elderly_phone,
+                e.address
+            FROM bookings b
+            JOIN elderly_users e ON b.elderly_id = e.id
+            WHERE b.volunteer_id = $1
+            ORDER BY b.booking_time DESC
+        `;
+        
+        console.log('Fetching bookings for volunteer:', volunteerId);
+        
+        const result = await pool.query(query, [volunteerId]);
+        
+        console.log('Query result:', result.rows);
+
+        res.json({
+            success: true,
+            bookings: result.rows.map(booking => ({
+                ...booking,
+                booking_time: booking.booking_time.toISOString(),
+            }))
+        });
+
+    } catch (error) {
+        console.error('Error fetching volunteer bookings:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch bookings',
             error: error.message
         });
     }
@@ -684,18 +684,27 @@ router.put('/bookings/:id/status', async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
 
+        console.log('Updating booking status:', { id, status });
+
+        if (!status) {
+            return res.status(400).json({
+                success: false,
+                message: 'Status is required'
+            });
+        }
+
         const updateQuery = `
             UPDATE bookings 
-            SET status = $1, 
+            SET status = $1::varchar, 
                 completed_at = CASE 
-                    WHEN $1 = 'completed' THEN CURRENT_TIMESTAMP 
+                    WHEN $1::varchar = 'completed' THEN CURRENT_TIMESTAMP 
                     ELSE completed_at 
                 END
             WHERE id = $2 
             RETURNING *
         `;
 
-        const result = await pool.query(updateQuery, [status, id]);
+        const result = await pool.query(updateQuery, [status, parseInt(id)]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({
@@ -703,6 +712,8 @@ router.put('/bookings/:id/status', async (req, res) => {
                 message: 'Booking not found'
             });
         }
+
+        console.log('Booking status updated successfully:', result.rows[0]);
 
         res.json({
             success: true,
