@@ -5,8 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 //import 'dart:convert';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:3000/api';
-  // static const String baseUrl = 'https://wellness-wings.onrender.com/api'; // Render (no guardian routes yet)
+  // static const String baseUrl = 'http://localhost:3000/api';
+  static const String baseUrl = 'https://wellness-wings.onrender.com/api'; // Render (now with guardian routes)
 
   //static const String baseUrl = 'http://10.140.62.54:3000/api';  Machine IP for physical device connectivity
   // static const String baseUrl = 'http://10.255.68.54:3000/api'; // Previous Machine IP
@@ -555,6 +555,31 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getVolunteerRequests(String volunteerId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/volunteer/requests/$volunteerId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return {
+          'success': false,
+          'message': 'Failed to fetch requests',
+          'requests': [],
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Failed to fetch requests: ${e.toString()}',
+        'requests': [],
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> getVolunteerBookings(String volunteerId) async {
     try {
       final response = await http.get(
@@ -625,7 +650,7 @@ class ApiService {
   }) async {
     try {
       final response = await http.put(
-        Uri.parse('$baseUrl/bookings/$bookingId/status'),
+        Uri.parse('$baseUrl/volunteer/bookings/$bookingId/status'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'status': status,

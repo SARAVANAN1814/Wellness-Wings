@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class BookingConfirmationPage extends StatelessWidget {
   final Map<String, dynamic> volunteerDetails;
@@ -99,7 +99,7 @@ class BookingConfirmationPage extends StatelessWidget {
                   _buildDetailRow(
                     Icons.phone_rounded,
                     'Contact',
-                    volunteerDetails['phone_number'] ?? 'Not available',
+                    _maskPhoneNumber(volunteerDetails['phone_number']),
                   ),
                   _buildDetailRow(
                     Icons.location_on_rounded,
@@ -155,42 +155,6 @@ class BookingConfirmationPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        final phoneNumber = volunteerDetails['phone_number'];
-                        if (phoneNumber != null) {
-                          final url = Uri.parse('tel:$phoneNumber');
-                          if (await canLaunchUrl(url)) {
-                            await launchUrl(url);
-                          }
-                        }
-                      },
-                      icon: const Icon(Icons.phone_rounded),
-                      label: const Text(
-                        'Call Volunteer',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade600,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 2,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               const SizedBox(height: 16),
               TextButton.icon(
                 onPressed: () {
@@ -328,5 +292,11 @@ class BookingConfirmationPage extends StatelessWidget {
     } catch (e) {
       return 'Invalid date';
     }
+  }
+  String _maskPhoneNumber(String? phone) {
+    if (phone == null || phone.isEmpty) return 'Hidden';
+    final digits = phone.replaceAll(RegExp(r'[^\d]'), '');
+    if (digits.length <= 4) return '****';
+    return '${'*' * (digits.length - 4)}${digits.substring(digits.length - 4)}';
   }
 } 

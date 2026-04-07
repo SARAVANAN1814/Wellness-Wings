@@ -20,30 +20,60 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
   final _apiService = ApiService();
   bool _isLoading = true;
   List<Map<String, dynamic>> _bookings = [];
+  List<Map<String, dynamic>> _requests = [];
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    _loadBookings();
+    _loadData();
   }
 
-  Future<void> _loadBookings() async {
+  Future<void> _loadData() async {
     try {
-      final result = await _apiService.getVolunteerBookings(widget.volunteerId);
+      final results = await Future.wait([
+        _apiService.getVolunteerBookings(widget.volunteerId),
+        _apiService.getVolunteerRequests(widget.volunteerId),
+      ]);
+
+      final bookingsResult = results[0];
+      final requestsResult = results[1];
+
       setState(() {
         _isLoading = false;
-        if (result['success']) {
-          _bookings = List<Map<String, dynamic>>.from(result['bookings']);
+        if (bookingsResult['success'] && requestsResult['success']) {
+          _bookings = List<Map<String, dynamic>>.from(bookingsResult['bookings']);
+          _requests = List<Map<String, dynamic>>.from(requestsResult['requests']);
         } else {
-          _error = result['message'];
+          _error = bookingsResult['message'] ?? requestsResult['message'];
         }
       });
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _error = 'Failed to load bookings: ${e.toString()}';
+        _error = 'Failed to load data: ${e.toString()}';
       });
+    }
+  }
+
+  Future<void> _updateBookingStatus(String id, String status) async {
+    try {
+      setState(() { _isLoading = true; });
+      final result = await _apiService.updateBookingStatus(bookingId: id, status: status);
+      if (result['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Status updated to $status'), backgroundColor: Colors.green),
+        );
+        _loadData(); // Reload data to show updated tabs
+      } else {
+        throw Exception(result['message']);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
+      );
+      setState(() { _isLoading = false; });
     }
   }
 
@@ -60,88 +90,95 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'My Bookings',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'My Bookings',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.teal.shade700,
+          elevation: 0,
+          bottom: const TabBar(
+            indicatorColor: Colors.white,
+            indicatorWeight: 3,
+            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+            tabs: [
+              Tab(text: 'Requests'),
+              Tab(text: 'Bookings'),
+            ],
           ),
         ),
-        backgroundColor: Colors.teal.shade700,
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.teal.shade700, Colors.white],
-            stops: const [0.0, 0.2],
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.teal.shade700, Colors.white],
+              stops: const [0.0, 0.2],
+            ),
           ),
-        ),
-        child: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(color: Colors.white),
-              )
-            : _error != null
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator(color: Colors.white))
+              : _error != null
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error_outline_rounded, size: 48, color: Colors.red.shade400),
+                          const SizedBox(height: 16),
+                          Text(_error!, style: const TextStyle(fontSize: 16, color: Colors.black87)),
+                        ],
+                      ),
+                    )
+                  : TabBarView(
                       children: [
-                        Icon(
-                          Icons.error_outline_rounded,
-                          size: 48,
-                          color: Colors.red.shade400,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _error!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87,
-                          ),
-                        ),
+                        _buildList(_requests, 'No pending requests', true),
+                        _buildList(_bookings, 'No bookings found', false),
                       ],
                     ),
-                  )
-                : _bookings.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.calendar_today_rounded,
-                              size: 48,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'No bookings found',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.all(16.0).copyWith(bottom: 32),
-                        itemCount: _bookings.length,
-                        separatorBuilder: (context, index) => const SizedBox(height: 16),
-                        itemBuilder: (context, index) {
-                          final booking = _bookings[index];
-                          return _buildBookingCard(booking);
-                        },
-                      ),
+        ),
       ),
     );
   }
 
-  Widget _buildBookingCard(Map<String, dynamic> booking) {
+  Widget _buildList(List<Map<String, dynamic>> items, String emptyMessage, bool isRequest) {
+    if (items.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isRequest ? Icons.inbox_rounded : Icons.calendar_today_rounded,
+              size: 48,
+              color: Colors.grey.shade400,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              emptyMessage,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black87),
+            ),
+          ],
+        ),
+      );
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.all(16.0).copyWith(bottom: 32),
+      itemCount: items.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 16),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return _buildBookingCard(item, isRequest);
+      },
+    );
+  }
+
+  Widget _buildBookingCard(Map<String, dynamic> booking, bool isRequest) {
     final status = booking['status']?.toString().toUpperCase() ?? 'PENDING';
     final statusColor = _getStatusColor(status);
 
@@ -393,23 +430,44 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
                       color: Colors.grey.shade600,
                     ),
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () => _showPaymentQR(context, booking),
-                    icon: const Icon(Icons.qr_code_scanner_rounded, size: 18),
-                    label: const Text(
-                      'Payment QR',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal.shade600,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  if (isRequest)
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () => _updateBookingStatus(booking['booking_id'].toString(), 'rejected'),
+                          style: TextButton.styleFrom(foregroundColor: Colors.red.shade700),
+                          child: const Text('Reject', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: () => _updateBookingStatus(booking['booking_id'].toString(), 'accepted'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal.shade600,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: const Text('Accept', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    )
+                  else if (status == 'ACCEPTED')
+                    ElevatedButton.icon(
+                      onPressed: () => _showPaymentQR(context, booking),
+                      icon: const Icon(Icons.qr_code_scanner_rounded, size: 18),
+                      label: const Text(
+                        'Payment QR',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal.shade600,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

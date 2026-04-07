@@ -416,7 +416,12 @@ router.get('/available', async (req, res) => {
             SELECT DISTINCT ON (v.id)
                 v.*,
                 vs.is_available,
-                vs.service_type`;
+                vs.service_type,
+                EXISTS(
+                    SELECT 1 FROM bookings b 
+                    WHERE b.volunteer_id = v.id 
+                    AND b.status = 'accepted'
+                ) AS is_busy`;
 
         const params = [service_type];
         let paramIndex = 2;
@@ -478,6 +483,48 @@ router.get('/available', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to fetch volunteers'
+        });
+    }
+});
+
+// Get Incoming Booking Requests for a Volunteer
+router.get('/requests/:volunteerId', async (req, res) => {
+    try {
+        const { volunteerId } = req.params;
+        
+        const query = `
+            SELECT 
+                b.id as booking_id,
+                b.booking_time,
+                b.status,
+                b.service_type,
+                b.description,
+                b.is_emergency,
+                e.full_name as elderly_name,
+                e.phone_number as elderly_phone,
+                e.address
+            FROM bookings b
+            JOIN elderly_users e ON b.elderly_id = e.id
+            WHERE b.volunteer_id = $1 AND b.status = 'pending'
+            ORDER BY b.booking_time ASC
+        `;
+        
+        const result = await pool.query(query, [volunteerId]);
+
+        res.json({
+            success: true,
+            requests: result.rows.map(booking => ({
+                ...booking,
+                booking_time: booking.booking_time.toISOString(),
+            }))
+        });
+
+    } catch (error) {
+        console.error('Error fetching volunteer requests:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch requests',
+            error: error.message
         });
     }
 });

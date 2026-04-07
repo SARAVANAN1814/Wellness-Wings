@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:wellness_wings/screens/booking_confirmation_page.dart';
 import '../services/api_service.dart';
@@ -168,17 +167,123 @@ I would like to book your services for the above-mentioned purpose. Contact me a
 Thank you.''';
   }
 
-  Future<void> _sendWhatsAppMessage(Map<String, dynamic> volunteer) async {
+  Future<void> _bookVolunteer(Map<String, dynamic> volunteer) async {
+    if (_elderlyDetails == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Elderly details not found'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    // Generate the booking message (same content as before)
+    final message = _generateWhatsAppMessage(
+      widget.serviceType,
+      widget.description,
+      widget.isEmergency,
+    );
+
+    // Show in-app confirmation dialog with the message
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.bookmark_add_rounded, color: Colors.teal.shade700),
+            const SizedBox(width: 8),
+            const Text('Confirm Booking', style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.teal.shade100),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.person, size: 18, color: Colors.teal.shade700),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            volunteer['full_name'] ?? 'Volunteer',
+                            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.teal.shade800),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.medical_services_rounded, size: 18, color: Colors.teal.shade700),
+                        const SizedBox(width: 6),
+                        Text(widget.serviceType, style: TextStyle(color: Colors.teal.shade700)),
+                      ],
+                    ),
+                    if (widget.isEmergency) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.warning_rounded, size: 18, color: Colors.red),
+                          const SizedBox(width: 6),
+                          const Text('EMERGENCY', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text('Booking Message:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.all(10),
+                constraints: const BoxConstraints(maxHeight: 200),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: SingleChildScrollView(
+                  child: Text(message, style: const TextStyle(fontSize: 13, height: 1.4)),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey.shade600)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.pop(ctx, true),
+            icon: const Icon(Icons.check_rounded, size: 18),
+            label: const Text('Confirm Booking'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal.shade700,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
     try {
-      if (_elderlyDetails == null) {
-        throw Exception('Elderly details not found');
-      }
+      setState(() { _isLoading = true; });
 
-      setState(() {
-        _isLoading = true;
-      });
-
-      // Create booking record first
       final bookingResult = await _apiService.createBooking(
         volunteerId: volunteer['id'].toString(),
         elderlyDetails: _elderlyDetails!,
@@ -191,57 +296,31 @@ Thank you.''';
         throw Exception(bookingResult['message']);
       }
 
-      // Generate and send WhatsApp message
-      final message = _generateWhatsAppMessage(
-        widget.serviceType,
-        widget.description,
-        widget.isEmergency,
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Booking created successfully!'), backgroundColor: Colors.green),
       );
 
-      final phoneNumber = volunteer['phone_number'].toString().replaceAll(RegExp(r'[^\d+]'), '');
-      final url = Uri.parse('https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
-      
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
-        
-        if (!mounted) return;
-        
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Booking created successfully'),
-            backgroundColor: Colors.green,
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BookingConfirmationPage(
+            volunteerDetails: volunteer,
+            serviceType: widget.serviceType,
+            isEmergency: widget.isEmergency,
+            bookingDetails: bookingResult['booking'],
           ),
-        );
-
-        // Navigate to booking confirmation page instead of popping
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BookingConfirmationPage(
-              volunteerDetails: volunteer,
-              serviceType: widget.serviceType,
-              isEmergency: widget.isEmergency,
-              bookingDetails: bookingResult['booking'],
-            ),
-          ),
-        );
-      } else {
-        throw Exception('Could not launch WhatsApp');
-      }
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to send message: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Failed to create booking: ${e.toString()}'), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() { _isLoading = false; });
       }
     }
   }
@@ -401,7 +480,9 @@ Thank you.''';
                                       width: 1,
                                     ),
                                   ),
-                                  child: Container(
+                                  child: Opacity(
+                                    opacity: volunteer['is_busy'] == true ? 0.6 : 1.0,
+                                    child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(16),
                                       gradient: LinearGradient(
@@ -570,14 +651,29 @@ Thank you.''';
                                             ),
                                           ),
                                         const Spacer(),
+                                        if (volunteer['is_busy'] == true)
+                                          Container(
+                                            margin: const EdgeInsets.only(bottom: 8),
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.orange.shade50,
+                                              border: Border.all(color: Colors.orange.shade200),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              'Currently in Service',
+                                              style: TextStyle(fontSize: 11, color: Colors.orange.shade800, fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
                                         Row(
                                           children: [
                                             Expanded(
                                               child: _buildActionButton(
                                                 icon: Icons.phone_rounded,
                                                 label: 'Call',
-                                                color: Colors.green.shade600,
-                                                onPressed: () {
+                                                color: volunteer['is_busy'] == true ? Colors.grey : Colors.green.shade600,
+                                                onPressed: volunteer['is_busy'] == true ? () {} : () {
                                                   // Secure Anonymous Voice Call via ZegoCloud 
                                                   ZegoUIKitPrebuiltCallInvitationService().send(
                                                     invitees: [
@@ -596,14 +692,15 @@ Thank you.''';
                                               child: _buildActionButton(
                                                 icon: Icons.message_rounded,
                                                 label: 'Book',
-                                                color: Colors.teal.shade700,
-                                                onPressed: () => _sendWhatsAppMessage(volunteer),
+                                                color: volunteer['is_busy'] == true ? Colors.grey : Colors.teal.shade700,
+                                                onPressed: volunteer['is_busy'] == true ? () {} : () => _bookVolunteer(volunteer),
                                               ),
                                             ),
                                           ],
                                         ),
                                       ],
                                     ),
+                                  ),
                                   ),
                                 );
                               },
