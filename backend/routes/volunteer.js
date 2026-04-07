@@ -693,18 +693,27 @@ router.put('/bookings/:id/status', async (req, res) => {
             });
         }
 
-        const updateQuery = `
-            UPDATE bookings 
-            SET status = $1::varchar, 
-                completed_at = CASE 
-                    WHEN $1::varchar = 'completed' THEN CURRENT_TIMESTAMP 
-                    ELSE completed_at 
-                END
-            WHERE id = $2 
-            RETURNING *
-        `;
+        let updateQuery;
+        let queryParams;
 
-        const result = await pool.query(updateQuery, [status, parseInt(id)]);
+        if (status === 'completed') {
+            updateQuery = `
+                UPDATE bookings 
+                SET status = $1, completed_at = CURRENT_TIMESTAMP
+                WHERE id = $2 
+                RETURNING *
+            `;
+        } else {
+            updateQuery = `
+                UPDATE bookings 
+                SET status = $1
+                WHERE id = $2 
+                RETURNING *
+            `;
+        }
+        queryParams = [status, parseInt(id)];
+
+        const result = await pool.query(updateQuery, queryParams);
 
         if (result.rows.length === 0) {
             return res.status(404).json({
