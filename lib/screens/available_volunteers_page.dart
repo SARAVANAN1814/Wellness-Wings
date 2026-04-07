@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -298,21 +299,11 @@ Thank you.''';
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Booking created successfully!'), backgroundColor: Colors.green),
-      );
+      Object bookingIdObj = bookingResult['booking']['id'];
+      String bookingId = bookingIdObj.toString();
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BookingConfirmationPage(
-            volunteerDetails: volunteer,
-            serviceType: widget.serviceType,
-            isEmergency: widget.isEmergency,
-            bookingDetails: bookingResult['booking'],
-          ),
-        ),
-      );
+      _showWaitingForAcceptanceDialog(volunteer, bookingId, bookingResult['booking']);
+
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -323,6 +314,131 @@ Thank you.''';
         setState(() { _isLoading = false; });
       }
     }
+  }
+
+  void _showWaitingForAcceptanceDialog(Map<String, dynamic> volunteer, String bookingId, Map<String, dynamic> bookingDetails) {
+    bool isDialogClosed = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        return WillPopScope(
+          onWillPop: () async => false, // Prevent dismissing by back button
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Text('Waiting for Volunteer', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 16),
+                const CircularProgressIndicator(color: Colors.teal),
+                const SizedBox(height: 24),
+                const Text(
+                  'Waiting for the volunteer to accept your request...',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 15),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ZegoUIKitPrebuiltCallInvitationService().send(
+                      invitees: [
+                        ZegoCallUser(
+                          'volunteer_${volunteer['id']}',
+                          volunteer['full_name'] ?? 'Volunteer',
+                        ),
+                      ],
+                      isVideoCall: false,
+                    );
+                  },
+                  icon: const Icon(Icons.phone_rounded),
+                  label: const Text('Call Volunteer'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green.shade600,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () {
+                    isDialogClosed = true;
+                    // Optional: hit a backend API to actually cancel the booking
+                    Navigator.pop(ctx);
+                  },
+                  child: Text('Cancel Request', style: TextStyle(color: Colors.red.shade700)),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    Timer.periodic(const Duration(seconds: 3), (timer) async {
+      if (isDialogClosed || !mounted) {
+        timer.cancel();
+        return;
+      }
+
+      try {
+        final result = await _apiService.getBookingStatus(bookingId);
+        if (result['success']) {
+          final status = result['status'].toString().toLowerCase();
+          
+          if (status == 'accepted') {
+            timer.cancel();
+            if (!isDialogClosed && mounted) {
+              isDialogClosed = true;
+              Navigator.pop(context); // Close the waiting dialog
+              
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BookingConfirmationPage(
+                    volunteerDetails: volunteer,
+                    serviceType: widget.serviceType,
+                    isEmergency: widget.isEmergency,
+                    bookingDetails: bookingDetails,
+                  ),
+                ),
+              );
+            }
+          } else if (status == 'rejected') {
+            timer.cancel();
+            if (!isDialogClosed && mounted) {
+              isDialogClosed = true;
+              Navigator.pop(context); // Close dialog
+              
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  title: Row(
+                    children: [
+                      Icon(Icons.cancel_rounded, color: Colors.red.shade700),
+                      const SizedBox(width: 8),
+                      const Text('Request Rejected'),
+                    ],
+                  ),
+                  content: const Text('The volunteer has rejected your booking request. Please try booking another volunteer.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('OK'),
+                    )
+                  ],
+                )
+              );
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore polling errors to let it retry
+      }
+    });
   }
 
   @override

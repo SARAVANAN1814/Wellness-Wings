@@ -1,7 +1,7 @@
-//import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import '../services/api_service.dart';
 
 class VolunteerBookingsPage extends StatefulWidget {
@@ -317,10 +317,36 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 16),
-                          child: _buildDetailItem(
-                            Icons.phone_outlined,
-                            'Phone Number',
-                            booking['elderly_phone'] ?? 'Not available',
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                if (booking['elderly_id'] != null) {
+                                  ZegoUIKitPrebuiltCallInvitationService().send(
+                                    invitees: [
+                                      ZegoCallUser(
+                                        'elderly_${booking['elderly_id']}',
+                                        booking['elderly_name'] ?? 'Elderly User',
+                                      ),
+                                    ],
+                                    isVideoCall: false,
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Cannot call: Elderly ID not found')),
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.phone_rounded, size: 16),
+                              label: const Text('Call User'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.teal.shade50,
+                                foregroundColor: Colors.teal.shade800,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              ),
+                            ),
                           ),
                         ),
                       ),

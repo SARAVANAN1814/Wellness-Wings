@@ -500,6 +500,7 @@ router.get('/requests/:volunteerId', async (req, res) => {
                 b.service_type,
                 b.description,
                 b.is_emergency,
+                b.elderly_id,
                 e.full_name as elderly_name,
                 e.phone_number as elderly_phone,
                 e.address
@@ -542,6 +543,7 @@ router.get('/bookings/:volunteerId', async (req, res) => {
                 b.service_type,
                 b.description,
                 b.is_emergency,
+                b.elderly_id,
                 e.full_name as elderly_name,
                 e.phone_number as elderly_phone,
                 e.address
@@ -570,6 +572,41 @@ router.get('/bookings/:volunteerId', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to fetch bookings',
+            error: error.message
+        });
+    }
+});
+
+// Get Booking Status by ID
+router.get('/bookings/status/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const query = `
+            SELECT status
+            FROM bookings
+            WHERE id = $1
+        `;
+        
+        const result = await pool.query(query, [id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Booking not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            status: result.rows[0].status
+        });
+
+    } catch (error) {
+        console.error('Error fetching booking status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch booking status',
             error: error.message
         });
     }

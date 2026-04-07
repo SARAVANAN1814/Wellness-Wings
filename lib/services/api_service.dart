@@ -670,6 +670,29 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getBookingStatus(String bookingId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/volunteer/bookings/status/$bookingId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return {
+          'success': false,
+          'message': 'Failed to fetch status',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error fetching status: ${e.toString()}',
+      };
+    }
+  }
+
   // ==================== GUARDIAN METHODS ====================
 
   Future<Map<String, dynamic>> registerGuardian({
