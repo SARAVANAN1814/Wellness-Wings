@@ -12,6 +12,12 @@ import 'screens/volunteer_bookings_page.dart';
 import 'screens/admin_login_page.dart';
 import 'screens/admin_dashboard_page.dart';
 import 'screens/admin_volunteer_details_page.dart';
+import 'screens/guardian_dashboard_page.dart';
+import 'screens/guardian_bookings_page.dart';
+import 'screens/guardian_notifications_page.dart';
+import 'screens/guardian_track_volunteer_page.dart';
+import 'screens/guardian_emergency_page.dart';
+import 'screens/guardian_profile_page.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -73,6 +79,30 @@ class WellnessWingsApp extends StatelessWidget {
           return MaterialPageRoute(
             builder: (context) => AdminVolunteerDetailsPage(
               volunteer: args,
+            ),
+          );
+        } else if (settings.name == '/guardian_dashboard') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => GuardianDashboardPage(
+              guardianData: args,
+            ),
+          );
+        } else if (settings.name == '/guardian_bookings') {
+          final args = settings.arguments as Map<String, dynamic>;
+          final elderlyData = args['elderlyData'] as Map<String, dynamic>;
+          final guardianId = args['guardianId'] as int;
+          return MaterialPageRoute(
+            builder: (context) => GuardianBookingsPage(
+              elderlyData: elderlyData,
+              guardianId: guardianId,
+            ),
+          );
+        } else if (settings.name == '/guardian_profile') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => GuardianProfilePage(
+              guardianData: args,
             ),
           );
         }

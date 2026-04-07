@@ -5,7 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 //import 'dart:convert';
 
 class ApiService {
-  static const String baseUrl = 'https://wellness-wings.onrender.com/api';
+  static const String baseUrl = 'http://localhost:3000/api';
+  // static const String baseUrl = 'https://wellness-wings.onrender.com/api'; // Render (no guardian routes yet)
 
   //static const String baseUrl = 'http://10.140.62.54:3000/api';  Machine IP for physical device connectivity
   // static const String baseUrl = 'http://10.255.68.54:3000/api'; // Previous Machine IP
@@ -641,6 +642,354 @@ class ApiService {
         'success': false,
         'message': 'Error updating booking status: ${e.toString()}',
       };
+    }
+  }
+
+  // ==================== GUARDIAN METHODS ====================
+
+  Future<Map<String, dynamic>> registerGuardian({
+    required String fullName,
+    required String email,
+    required String phoneNumber,
+    required String password,
+    String? relation,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/guardian/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'fullName': fullName.trim(),
+          'email': email.trim().toLowerCase(),
+          'phoneNumber': phoneNumber.trim(),
+          'password': password,
+          'relation': relation?.trim(),
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 201) {
+        return {'success': true, 'message': data['message'], 'user': data['user']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Registration failed'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> loginGuardian({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/guardian/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email.trim().toLowerCase(),
+          'password': password,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data['success'] == true) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('guardian_details', jsonEncode(data['user']));
+        return {'success': true, 'message': data['message'], 'user': data['user']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Login failed'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error. Please check your internet.'};
+    }
+  }
+
+  Future<Map<String, dynamic>> updateGuardianProfile({
+    required int id,
+    required String fullName,
+    required String email,
+    required String phoneNumber,
+    String? relation,
+  }) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/guardian/profile/$id'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'fullName': fullName.trim(),
+          'email': email.trim().toLowerCase(),
+          'phoneNumber': phoneNumber.trim(),
+          'relation': relation?.trim(),
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('guardian_details', jsonEncode(data['user']));
+        return {'success': true, 'message': data['message'], 'user': data['user']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Update failed'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> changeGuardianPassword({
+    required int id,
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/guardian/change-password/$id'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        }),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> linkElderly({
+    required int guardianId,
+    required String elderlyPhone,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/guardian/link-elderly'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'guardianId': guardianId,
+          'elderlyPhone': elderlyPhone.trim(),
+        }),
+      );
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> unlinkElderly({
+    required int guardianId,
+    required int elderlyId,
+  }) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/guardian/unlink-elderly'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'guardianId': guardianId,
+          'elderlyId': elderlyId,
+        }),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> getLinkedElderly({required int guardianId}) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/guardian/linked-elderly/$guardianId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error', 'elderly': []};
+    }
+  }
+
+  Future<Map<String, dynamic>> getElderlyBookingsForGuardian({
+    required int elderlyId,
+    required int guardianId,
+    String? status,
+    String? serviceType,
+  }) async {
+    try {
+      String url = '$baseUrl/guardian/elderly-bookings/$elderlyId?guardianId=$guardianId';
+      if (status != null && status != 'all') url += '&status=$status';
+      if (serviceType != null) url += '&serviceType=$serviceType';
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error', 'bookings': []};
+    }
+  }
+
+  Future<Map<String, dynamic>> cancelBooking({
+    required int bookingId,
+    required int guardianId,
+    String? reason,
+  }) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/guardian/cancel-booking/$bookingId'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'guardianId': guardianId,
+          'reason': reason,
+        }),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> rateVolunteer({
+    required int bookingId,
+    required int guardianId,
+    required int volunteerId,
+    required int rating,
+    String? review,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/guardian/rate-volunteer'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'bookingId': bookingId,
+          'guardianId': guardianId,
+          'volunteerId': volunteerId,
+          'rating': rating,
+          'review': review,
+        }),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> getGuardianDashboardStats({
+    required int guardianId,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/guardian/dashboard-stats/$guardianId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error'};
+    }
+  }
+
+  // ==================== NOTIFICATIONS & EMERGENCY ====================
+
+  Future<Map<String, dynamic>> getGuardianNotifications({
+    required int guardianId,
+    String? since,
+    String? type,
+  }) async {
+    try {
+      String url = '$baseUrl/notifications/$guardianId';
+      List<String> params = [];
+      if (since != null) params.add('since=$since');
+      if (type != null && type != 'all') params.add('type=$type');
+      if (params.isNotEmpty) url += '?${params.join('&')}';
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'notifications': [], 'count': 0};
+    }
+  }
+
+  Future<Map<String, dynamic>> getNotificationCount({required int guardianId}) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/notifications/count/$guardianId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'count': 0};
+    }
+  }
+
+  Future<Map<String, dynamic>> markNotificationRead({
+    required int guardianId,
+    required int bookingId,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/notifications/mark-read'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'guardianId': guardianId,
+          'bookingId': bookingId,
+        }),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error'};
+    }
+  }
+
+  Future<Map<String, dynamic>> markAllNotificationsRead({
+    required int guardianId,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/notifications/mark-all-read'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'guardianId': guardianId,
+        }),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error'};
+    }
+  }
+
+  Future<Map<String, dynamic>> createEmergencyBooking({
+    required int guardianId,
+    required int elderlyId,
+    String? serviceType,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/guardian/emergency-booking'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'guardianId': guardianId,
+          'elderlyId': elderlyId,
+          'serviceType': serviceType ?? 'Emergency Assistance',
+        }),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> getVolunteerLiveLocation({
+    required int volunteerId,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/volunteer/profile/$volunteerId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error'};
     }
   }
 }

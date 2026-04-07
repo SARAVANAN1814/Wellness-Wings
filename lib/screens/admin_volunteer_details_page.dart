@@ -275,7 +275,7 @@ class _AdminVolunteerDetailsPageState extends State<AdminVolunteerDetailsPage> {
         int idx = 0;
         int matched = 0;
         for (var entry in idealAnswers.entries) {
-          final userAnswer = answers[entry.key]?.toString() ?? '';
+          final userAnswer = answers![entry.key]?.toString() ?? '';
           if (userAnswer == entry.value) {
             contentScore += pointsMap[idx] ?? 0;
             matched++;

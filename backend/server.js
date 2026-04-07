@@ -1,8 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const elderlyRoutes = require('./routes/elderly');
 const volunteerRoutes = require('./routes/volunteer');
 const adminRoutes = require('./routes/admin');
+const guardianRoutes = require('./routes/guardian');
+const notificationRoutes = require('./routes/notifications');
 
 const app = express();
 
@@ -35,6 +38,8 @@ app.get('/api/health', async (req, res) => {
 app.use('/api/elderly', elderlyRoutes);
 app.use('/api/volunteer', volunteerRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/guardian', guardianRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
