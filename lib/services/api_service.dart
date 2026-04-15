@@ -693,6 +693,24 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> updateVolunteerOnlineStatus(String volunteerId, bool isOnline) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/volunteer/online-status/$volunteerId'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'is_online': isOnline}),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return {'success': false, 'message': 'Failed to update online status'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Error updating online status: ${e.toString()}'};
+    }
+  }
+
   // ==================== GUARDIAN METHODS ====================
 
   Future<Map<String, dynamic>> registerGuardian({

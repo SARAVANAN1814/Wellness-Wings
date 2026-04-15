@@ -309,47 +309,49 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
                           booking['elderly_name'] ?? 'Not available',
                         ),
                       ),
-                      Container(
-                        width: 1,
-                        height: 40,
-                        color: Colors.grey.shade200,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 16),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                if (booking['elderly_id'] != null) {
-                                  ZegoUIKitPrebuiltCallInvitationService().send(
-                                    invitees: [
-                                      ZegoCallUser(
-                                        'elderly_${booking['elderly_id']}',
-                                        booking['elderly_name'] ?? 'Elderly User',
-                                      ),
-                                    ],
-                                    isVideoCall: false,
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Cannot call: Elderly ID not found')),
-                                  );
-                                }
-                              },
-                              icon: const Icon(Icons.phone_rounded, size: 16),
-                              label: const Text('Call User'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal.shade50,
-                                foregroundColor: Colors.teal.shade800,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      if (status == 'ACCEPTED' || status == 'PENDING') ...[
+                        Container(
+                          width: 1,
+                          height: 40,
+                          color: Colors.grey.shade200,
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  if (booking['elderly_id'] != null) {
+                                    ZegoUIKitPrebuiltCallInvitationService().send(
+                                      invitees: [
+                                        ZegoCallUser(
+                                          'elderly_${booking['elderly_id']}',
+                                          booking['elderly_name'] ?? 'Elderly User',
+                                        ),
+                                      ],
+                                      isVideoCall: false,
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Cannot call: Elderly ID not found')),
+                                    );
+                                  }
+                                },
+                                icon: const Icon(Icons.phone_rounded, size: 16),
+                                label: const Text('Call User'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal.shade50,
+                                  foregroundColor: Colors.teal.shade800,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -622,7 +624,7 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
                     ],
                   ),
                   child: QrImageView(
-                    data: 'WW_SERVICE_${booking['id']}',  // Simple QR data
+                    data: 'WW_SERVICE_${booking['booking_id']}',  // Simple QR data
                     version: QrVersions.auto,
                     size: 200.0,
                     backgroundColor: Colors.white,
@@ -638,7 +640,44 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () => _showThankYouDialog(context, booking),
+                  onPressed: () async {
+                    try {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (ctx) => const Center(child: CircularProgressIndicator()),
+                      );
+                      
+                      final result = await _apiService.updateBookingStatus(
+                        bookingId: booking['booking_id'].toString(),
+                        status: 'completed'
+                      );
+                      
+                      if (context.mounted) {
+                        Navigator.pop(context); // close progress dialog
+                      }
+
+                      if (result['success']) {
+                        if (context.mounted) {
+                          Navigator.pop(context); // close QR dialog
+                          _showThankYouDialog(context, booking);
+                        }
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed: ${result['message']}')),
+                          );
+                        }
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        Navigator.pop(context); // close progress dialog
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: $e')),
+                        );
+                      }
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
                     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
@@ -713,11 +752,8 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
-                    // Navigate to home page and clear all previous routes
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/',  // Home route
-                      (Route<dynamic> route) => false, // Remove all previous routes
-                    );
+                    // Pop back to the volunteer dashboard instead of destroying session
+                    Navigator.of(context).popUntil((route) => route.isFirst);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,

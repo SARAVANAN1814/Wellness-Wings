@@ -159,6 +159,7 @@ class _ElderlyPurposeSelectionPageState extends State<ElderlyPurposeSelectionPag
                   _buildPurposeCard('Bank Visit', Icons.account_balance_rounded),
                   _buildPurposeCard('Religious Visit', Icons.church_rounded),
                   _buildPurposeCard('Companion Visit', Icons.diversity_3_rounded),
+                  _buildPurposeCard('Shopping Visit', Icons.shopping_bag_rounded),
                 ],
               ),
               const SizedBox(height: 24),

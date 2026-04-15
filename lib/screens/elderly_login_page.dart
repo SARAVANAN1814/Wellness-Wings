@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class ElderlyLoginPage extends StatefulWidget {
   const ElderlyLoginPage({super.key});
@@ -114,7 +115,7 @@ class _ElderlyLoginPageState extends State<ElderlyLoginPage> {
               appSign: 'feea80e8886ee2d1bd26d1ad0bb6c0b41152ec75b2b952d07261600211bf60cd',
               userID: 'elderly_${user['id']}',
               userName: user['full_name'] ?? 'Elderly User',
-              plugins: [],
+              plugins: [ZegoUIKitSignalingPlugin()],
             );
           }
           Navigator.pushReplacementNamed(context, '/elderly_purpose_selection');

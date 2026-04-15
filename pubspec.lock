@@ -399,7 +399,7 @@ packages:
     source: hosted
     version: "2.0.33"
   flutter_ringtone_player:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_ringtone_player
       sha256: ae4a2caab2cfd14902f3ee5fe0307c454b396f0077fa34700238d6c4bd99cfec
@@ -1534,7 +1534,7 @@ packages:
     source: hosted
     version: "4.22.2"
   zego_uikit_signaling_plugin:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: zego_uikit_signaling_plugin
       sha256: "57b0e22308c7a795a3ff951453a57afa6b3b6fe77b9f85ef007b28f092b690d9"

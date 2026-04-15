@@ -50,6 +50,8 @@ dependencies:
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
   zego_uikit_prebuilt_call: any
+  zego_uikit_signaling_plugin: any
+  flutter_ringtone_player: ^4.0.0+4
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,11 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:wellness_wings/services/api_service.dart';
 import 'volunteer_edit_profile_page.dart';
 
@@ -40,6 +45,9 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
   bool _isLoading = false;
   bool _isAvailable = true;
   late Map<String, dynamic> _volunteerData;
+  Timer? _pollingTimer;
+  Timer? _notificationTimer;
+  final Set<int> _notifiedBookingIds = {};
 
   final List<ServiceType> _services = [
     ServiceType(
@@ -88,6 +96,106 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
     super.initState();
     _volunteerData = widget.volunteerData;
     _loadCurrentSettings();
+    _startPollingForRequests();
+
+    // Defensive Zego connection to ensure volunteer can ALWAYS receive calls
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final volunteerId = _volunteerData['id'] ?? _volunteerData['volunteer_id'];
+      if (volunteerId != null) {
+        ZegoUIKitPrebuiltCallInvitationService().init(
+          appID: 494787214,
+          appSign: 'feea80e8886ee2d1bd26d1ad0bb6c0b41152ec75b2b952d07261600211bf60cd',
+          userID: 'volunteer_$volunteerId',
+          userName: _volunteerData['full_name'] ?? 'Volunteer',
+          plugins: [ZegoUIKitSignalingPlugin()],
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    _notificationTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startPollingForRequests() {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      try {
+        final volunteerId = _volunteerData['volunteer_id'] ?? _volunteerData['id'];
+        if (volunteerId == null) return;
+        
+        final result = await _apiService.getVolunteerRequests(volunteerId.toString());
+        if (result['success'] && mounted) {
+          final requests = List<Map<String, dynamic>>.from(result['requests']);
+          if (requests.isNotEmpty) {
+            for (var request in requests) {
+              final bookingId = request['booking_id'];
+              if (!_notifiedBookingIds.contains(bookingId)) {
+                _notifiedBookingIds.add(bookingId);
+                _showNewRequestPopup(request);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        print('Polling error: $e');
+      }
+    });
+  }
+
+  void _showNewRequestPopup(Map<String, dynamic> request) {
+    if (!mounted) return;
+
+    FlutterRingtonePlayer().playNotification();
+    HapticFeedback.vibrate();
+
+    _notificationTimer?.cancel();
+    _notificationTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      FlutterRingtonePlayer().playNotification();
+      HapticFeedback.vibrate();
+    });
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.notifications_active, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('New Request'),
+          ],
+        ),
+        content: Text('You have a new booking request for ${request['service_type']} from ${request['elderly_name']}.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              _notificationTimer?.cancel();
+              _apiService.updateBookingStatus(
+                bookingId: request['booking_id'].toString(), 
+                status: 'rejected'
+              );
+              Navigator.pop(ctx);
+            },
+            child: const Text('Dismiss', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _notificationTimer?.cancel();
+              Navigator.pop(ctx);
+              Navigator.pushNamed(
+                context,
+                '/volunteer_bookings',
+                arguments: (_volunteerData['id'] ?? _volunteerData['volunteer_id']).toString(),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+            child: const Text('View Details', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadVolunteerDetails() async {
@@ -307,6 +415,22 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
               leading: const Icon(Icons.logout_rounded, color: Colors.red),
               title: const Text('Log Out', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
               onTap: () async {
+                // Rapido/Ola style offline enforcement: Force them fully Offline when they exit.
+                try {
+                  final volunteerId = _volunteerData['id']?.toString() ?? _volunteerData['volunteer_id']?.toString();
+                  if (volunteerId != null) {
+                    final servicesToSend = _services.map((service) => {
+                      'service_type': service.name,
+                      'is_available': false,
+                    }).toList();
+                    
+                    await _apiService.updateVolunteerServices(
+                      volunteerId: volunteerId,
+                      services: servicesToSend,
+                    );
+                  }
+                } catch(e) {}
+                
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.remove('volunteer_details');
                 if (mounted) {

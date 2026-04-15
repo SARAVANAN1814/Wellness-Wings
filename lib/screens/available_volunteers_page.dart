@@ -156,7 +156,6 @@ I am ${_elderlyDetails!['full_name']}, an elderly individual seeking assistance.
 
 My Details:
 Name: ${_elderlyDetails!['full_name']}
-Contact: ${_elderlyDetails!['phone_number']}
 Address: ${_elderlyDetails!['address']}
 
 Service Required: $serviceType
@@ -243,21 +242,6 @@ Thank you.''';
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
-              const Text('Booking Message:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.all(10),
-                constraints: const BoxConstraints(maxHeight: 200),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: SingleChildScrollView(
-                  child: Text(message, style: const TextStyle(fontSize: 13, height: 1.4)),
-                ),
-              ),
             ],
           ),
         ),
@@ -289,7 +273,7 @@ Thank you.''';
         volunteerId: volunteer['id'].toString(),
         elderlyDetails: _elderlyDetails!,
         serviceType: widget.serviceType,
-        description: widget.description,
+        description: message,
         isEmergency: widget.isEmergency,
       );
 
@@ -365,7 +349,7 @@ Thank you.''';
                 TextButton(
                   onPressed: () {
                     isDialogClosed = true;
-                    // Optional: hit a backend API to actually cancel the booking
+                    _apiService.updateBookingStatus(bookingId: bookingId, status: 'cancelled');
                     Navigator.pop(ctx);
                   },
                   child: Text('Cancel Request', style: TextStyle(color: Colors.red.shade700)),

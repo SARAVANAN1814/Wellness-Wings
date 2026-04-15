@@ -19,6 +19,7 @@ import 'screens/guardian_track_volunteer_page.dart';
 import 'screens/guardian_emergency_page.dart';
 import 'screens/guardian_profile_page.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -26,7 +27,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
   
-  ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI([]);
+  ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI([ZegoUIKitSignalingPlugin()]);
   runApp(const WellnessWingsApp());
 }
 

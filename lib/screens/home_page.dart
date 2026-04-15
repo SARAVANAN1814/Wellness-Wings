@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellness_wings/services/api_service.dart';
 import 'dart:convert';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -191,7 +192,7 @@ class HomePage extends StatelessWidget {
                                           appSign: 'feea80e8886ee2d1bd26d1ad0bb6c0b41152ec75b2b952d07261600211bf60cd',
                                           userID: 'elderly_${data['id']}',
                                           userName: data['full_name'] ?? 'Elderly User',
-                                          plugins: [],
+                                          plugins: [ZegoUIKitSignalingPlugin()],
                                         );
                                         Navigator.pushNamed(context, '/elderly_purpose_selection');
                                       } else {
@@ -259,7 +260,7 @@ class HomePage extends StatelessWidget {
                                           appSign: 'feea80e8886ee2d1bd26d1ad0bb6c0b41152ec75b2b952d07261600211bf60cd',
                                           userID: 'volunteer_${userData['id'] ?? userData['volunteer_id']}',
                                           userName: userData['full_name'] ?? 'Volunteer',
-                                          plugins: [],
+                                          plugins: [ZegoUIKitSignalingPlugin()],
                                         );
                                         Navigator.pushNamed(
                                           context, 
@@ -326,7 +327,7 @@ class HomePage extends StatelessWidget {
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              if (!kReleaseMode)
+                              if (kDebugMode)
                                 TextButton(
                                   onPressed: () {
                                     Navigator.pushNamed(context, '/admin_login');

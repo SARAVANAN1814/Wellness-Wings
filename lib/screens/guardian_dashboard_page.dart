@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import '../services/api_service.dart';
 import 'guardian_bookings_page.dart';
 import 'guardian_notifications_page.dart';
@@ -50,7 +51,7 @@ class _GuardianDashboardPageState extends State<GuardianDashboardPage> {
       appSign: 'feea80e8886ee2d1bd26d1ad0bb6c0b41152ec75b2b952d07261600211bf60cd',
       userID: 'guardian_${widget.guardianData['id']}',
       userName: widget.guardianData['full_name'] ?? 'Guardian',
-      plugins: [],
+      plugins: [ZegoUIKitSignalingPlugin()],
     );
   }
 

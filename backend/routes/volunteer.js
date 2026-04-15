@@ -146,6 +146,9 @@ router.post('/login', async (req, res) => {
 
         // Remove sensitive data before sending response
         delete user.password_hash;
+        
+        // Update online status
+        await pool.query('UPDATE volunteer_users SET is_online = true WHERE id = $1', [user.id]);
 
         res.json({
             success: true,
@@ -445,6 +448,7 @@ router.get('/available', async (req, res) => {
             WHERE vs.service_type = $1 
             AND vs.is_available = true
             AND v.status = 'approved'
+            AND v.is_online = true
         `;
 
         if (emergency === 'true') {
@@ -764,6 +768,20 @@ router.post('/update-location', async (req, res) => {
             success: false,
             message: 'Failed to update location'
         });
+    }
+});
+
+// Update Online Status
+router.put('/online-status/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { is_online } = req.body;
+        const query = 'UPDATE volunteer_users SET is_online = $1 WHERE id = $2';
+        await pool.query(query, [is_online, id]);
+        res.json({ success: true, message: 'Online status updated' });
+    } catch (error) {
+        console.error('Error updating online status:', error);
+        res.status(500).json({ success: false, message: 'Failed to update online status' });
     }
 });
 

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class VolunteerLoginPage extends StatefulWidget {
   const VolunteerLoginPage({super.key});
@@ -147,7 +148,7 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
               appSign: 'feea80e8886ee2d1bd26d1ad0bb6c0b41152ec75b2b952d07261600211bf60cd',
               userID: 'volunteer_${user['id']}',
               userName: user['full_name'] ?? 'Volunteer',
-              plugins: [],
+              plugins: [ZegoUIKitSignalingPlugin()],
             );
             
             Navigator.pushReplacementNamed(
