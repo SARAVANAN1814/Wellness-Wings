@@ -183,15 +183,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/migrate-isonline', async (req, res) => {
-    try {
-        await pool.query(`ALTER TABLE volunteer_users ADD COLUMN IF NOT EXISTS is_online BOOLEAN DEFAULT false`);
-        res.json({ success: true, message: 'is_online column added successfully' });
-    } catch(e) {
-        res.status(500).json({ error: e.message });
-    }
-});
-
 // Get Volunteer Profile Picture (separate endpoint to avoid large login payload)
 router.get('/profile-picture/:id', async (req, res) => {
     try {
