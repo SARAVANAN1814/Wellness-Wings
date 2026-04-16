@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/responsive_container.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:wellness_wings/services/api_service.dart';
@@ -437,10 +438,13 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
         decoration: BoxDecoration(
           color: Colors.grey[50],
         ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: ResponsiveContainer(
+              maxWidth: 600,
+              child: Form(
+                key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -1226,6 +1230,8 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
               ],
             ),
           ),
+        ),
+        ),
         ),
       ),
     );

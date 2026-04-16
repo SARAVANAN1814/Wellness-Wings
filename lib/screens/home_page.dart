@@ -5,6 +5,7 @@ import 'package:wellness_wings/services/api_service.dart';
 import 'dart:convert';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
+import '../widgets/responsive_container.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -65,11 +66,13 @@ class HomePage extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Column(
-              children: [
-                Row(
+          child: ResponsiveContainer(
+            maxWidth: 800,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                children: [
+                  Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.favorite, color: Colors.white, size: 24),
@@ -349,6 +352,7 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),

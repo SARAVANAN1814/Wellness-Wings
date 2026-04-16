@@ -238,7 +238,7 @@ class ApiService {
         body: jsonEncode({
           'full_name': fullName,
           'gender': gender,
-          'email': email,
+          'email': email.trim().toLowerCase(),
           'phone_number': phoneNumber,
           'password': password,
           'has_experience': hasExperience,
@@ -380,8 +380,10 @@ class ApiService {
           'email': email.trim().toLowerCase(),
           'password': password,
         }),
-      ).timeout(const Duration(seconds: 10));
+      ).timeout(const Duration(seconds: 30));
 
+      print('Volunteer login response status: ${response.statusCode}');
+      print('Volunteer login response body: ${response.body}');
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
@@ -416,6 +418,25 @@ class ApiService {
         'success': false,
         'message': 'Login failed. Please check your internet connection.',
       };
+    }
+  }
+
+  // Fetch profile picture separately after login (to keep login response fast)
+  Future<String?> getVolunteerProfilePicture(String volunteerId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/volunteer/profile-picture/$volunteerId'),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 60));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['profile_picture'] as String?;
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching profile picture: $e');
+      return null;
     }
   }
 
@@ -508,21 +529,33 @@ class ApiService {
       final response = await http.get(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
-      );
+      ).timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        final data = jsonDecode(response.body);
+        // If the response is successful but the volunteers list is empty,
+        // return a user-friendly message instead of a generic error.
+        final volunteers = data['volunteers'] as List? ?? [];
+        if (volunteers.isEmpty) {
+          return {
+            'success': true,
+            'message': 'No available volunteers for this service at this moment',
+            'volunteers': [],
+          };
+        }
+        return data;
       } else {
         return {
           'success': false,
-          'message': 'Failed to fetch volunteers',
+          'message': 'No available volunteers for this service at this moment',
           'volunteers': [],
         };
       }
     } catch (e) {
+      print('Error fetching available volunteers: $e');
       return {
         'success': false,
-        'message': 'Error: ${e.toString()}',
+        'message': 'Unable to connect to server. Please check your internet connection.',
         'volunteers': [],
       };
     }

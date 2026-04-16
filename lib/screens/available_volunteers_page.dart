@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import '../widgets/responsive_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -448,7 +449,10 @@ Thank you.''';
             stops: const [0.0, 0.2],
           ),
         ),
-        child: _isLoading
+        child: Center(
+          child: ResponsiveContainer(
+            maxWidth: 1000,
+            child: _isLoading
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -491,28 +495,42 @@ Thank you.''';
               )
             : _error != null
                 ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline_rounded,
-                          size: 48,
-                          color: Colors.red.shade400,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _error!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person_search_rounded,
+                            size: 56,
+                            color: Colors.teal.shade300,
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _loadVolunteers,
-                          child: const Text('Retry'),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          Text(
+                            _error!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: _loadVolunteers,
+                            icon: const Icon(Icons.refresh_rounded),
+                            label: const Text('Try Again'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal.shade600,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : _volunteers.isEmpty
@@ -527,7 +545,8 @@ Thank you.''';
                             ),
                             const SizedBox(height: 16),
                             const Text(
-                              'Sorry no volunteers found in the nearby',
+                              'No available volunteers for this service\nat this moment',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black87,
@@ -536,7 +555,8 @@ Thank you.''';
                             ),
                             const SizedBox(height: 8),
                             const Text(
-                              'Try checking again later or adjusting your search.',
+                              'Please try again later. Volunteers may become available soon.',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
@@ -809,6 +829,8 @@ Thank you.''';
                         ],
                       ),
                     ),
+                  ),
+                ),
     );
   }
 

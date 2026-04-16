@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../widgets/responsive_container.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'available_volunteers_page.dart';
@@ -131,10 +132,13 @@ class _ElderlyPurposeSelectionPageState extends State<ElderlyPurposeSelectionPag
             stops: const [0.0, 0.4],
           ),
         ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: ResponsiveContainer(
+              maxWidth: 800,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0),
@@ -164,7 +168,9 @@ class _ElderlyPurposeSelectionPageState extends State<ElderlyPurposeSelectionPag
               ),
               const SizedBox(height: 24),
               _buildOtherPurposeSection(),
-            ],
+              ],
+            ),
+          ),
           ),
         ),
       ),

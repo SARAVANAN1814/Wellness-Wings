@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import '../widgets/responsive_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -99,7 +100,7 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
     _startPollingForRequests();
 
     // Defensive Zego connection to ensure volunteer can ALWAYS receive calls
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
       final volunteerId = _volunteerData['id'] ?? _volunteerData['volunteer_id'];
       if (volunteerId != null) {
         ZegoUIKitPrebuiltCallInvitationService().init(
@@ -109,8 +110,32 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
           userName: _volunteerData['full_name'] ?? 'Volunteer',
           plugins: [ZegoUIKitSignalingPlugin()],
         );
+
+        // Load profile picture in background (not included in login response for speed)
+        _loadProfilePicture(volunteerId.toString());
       }
     });
+  }
+
+  Future<void> _loadProfilePicture(String volunteerId) async {
+    try {
+      final profilePicture = await _apiService.getVolunteerProfilePicture(volunteerId);
+      if (profilePicture != null && mounted) {
+        setState(() {
+          _volunteerData['profile_picture'] = profilePicture;
+        });
+        // Also update cached data
+        final prefs = await SharedPreferences.getInstance();
+        final cached = prefs.getString('volunteer_details');
+        if (cached != null) {
+          final cachedData = jsonDecode(cached) as Map<String, dynamic>;
+          cachedData['profile_picture'] = profilePicture;
+          await prefs.setString('volunteer_details', jsonEncode(cachedData));
+        }
+      }
+    } catch (e) {
+      print('Error loading profile picture: $e');
+    }
   }
 
   @override
@@ -450,8 +475,11 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
             stops: const [0.0, 0.2],
           ),
         ),
-        child: Column(
-          children: <Widget>[
+        child: Center(
+          child: ResponsiveContainer(
+            maxWidth: 800,
+            child: Column(
+              children: <Widget>[
             Container(
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),
@@ -671,10 +699,12 @@ class _VolunteerAvailabilityPageState extends State<VolunteerAvailabilityPage> {
                   ),
                 ],
               ),
-            ),
-          ],
+              ),
+            ],
+          ),
+          ),
+          ),
         ),
-      ),
     );
   }
 } 

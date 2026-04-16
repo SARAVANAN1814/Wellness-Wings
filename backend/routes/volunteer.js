@@ -162,7 +162,8 @@ router.post('/login', async (req, res) => {
                 has_experience: user.has_experience,
                 experience_details: user.experience_details,
                 id_card_path: user.id_card_path,
-                profile_picture: user.profile_picture,
+                profile_picture: null,
+                has_profile_picture: !!user.profile_picture,
                 place: user.place,
                 state: user.state,
                 country: user.country,
@@ -179,6 +180,27 @@ router.post('/login', async (req, res) => {
             success: false,
             message: 'Login failed. Please try again.'
         });
+    }
+});
+
+// Get Volunteer Profile Picture (separate endpoint to avoid large login payload)
+router.get('/profile-picture/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const query = 'SELECT profile_picture FROM volunteer_users WHERE id = $1';
+        const result = await pool.query(query, [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Volunteer not found' });
+        }
+
+        res.json({
+            success: true,
+            profile_picture: result.rows[0].profile_picture
+        });
+    } catch (error) {
+        console.error('Profile picture fetch error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch profile picture' });
     }
 });
 

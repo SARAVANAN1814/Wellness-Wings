@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import '../services/api_service.dart';
+import '../widgets/responsive_container.dart';
 
 class VolunteerBookingsPage extends StatefulWidget {
   final String volunteerId;
@@ -167,14 +168,19 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
         ),
       );
     }
-    return ListView.separated(
-      padding: const EdgeInsets.all(16.0).copyWith(bottom: 32),
-      itemCount: items.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 16),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return _buildBookingCard(item, isRequest);
-      },
+    return Center(
+      child: ResponsiveContainer(
+        maxWidth: 800,
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16.0).copyWith(bottom: 32),
+          itemCount: items.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 16),
+          itemBuilder: (context, index) {
+            final item = items[index];
+            return _buildBookingCard(item, isRequest);
+          },
+        ),
+      ),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/responsive_container.dart';
 import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -165,10 +166,13 @@ class _ElderlyRegistrationPageState extends State<ElderlyRegistrationPage> {
         decoration: BoxDecoration(
           color: Colors.grey[50],
         ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: ResponsiveContainer(
+              maxWidth: 600,
+              child: Form(
+                key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -459,6 +463,8 @@ class _ElderlyRegistrationPageState extends State<ElderlyRegistrationPage> {
               ],
             ),
           ),
+        ),
+        ),
         ),
       ),
     );
