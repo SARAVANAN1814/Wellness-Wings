@@ -183,10 +183,10 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/debug-schema', async (req, res) => {
+router.get('/migrate-isonline', async (req, res) => {
     try {
-        const result = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'volunteer_users'`);
-        res.json({ success: true, columns: result.rows.map(r => r.column_name) });
+        await pool.query(`ALTER TABLE volunteer_users ADD COLUMN IF NOT EXISTS is_online BOOLEAN DEFAULT false`);
+        res.json({ success: true, message: 'is_online column added successfully' });
     } catch(e) {
         res.status(500).json({ error: e.message });
     }
