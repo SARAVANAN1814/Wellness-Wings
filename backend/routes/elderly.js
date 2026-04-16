@@ -260,4 +260,33 @@ router.post('/update-location', async (req, res) => {
     }
 });
 
+// Get Active Booking for Elderly
+router.get('/active-booking/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const query = `
+            SELECT b.*, v.full_name as volunteer_name, v.phone_number as volunteer_phone, v.profile_picture as volunteer_photo, v.latitude as volunteer_lat, v.longitude as volunteer_lng
+            FROM bookings b
+            JOIN volunteer_users v ON b.volunteer_id = v.id
+            WHERE b.elderly_id = $1 AND b.status IN ('accepted', 'in_progress')
+            ORDER BY b.booking_time DESC
+            LIMIT 1
+        `;
+        const result = await pool.query(query, [id]);
+
+        if (result.rows.length === 0) {
+            return res.json({ success: true, hasActiveBooking: false });
+        }
+
+        res.json({
+            success: true,
+            hasActiveBooking: true,
+            booking: result.rows[0]
+        });
+    } catch (error) {
+        console.error('Error fetching active booking:', error);
+        res.status(500).json({ success: false, message: 'Server error fetching active booking' });
+    }
+});
+
 module.exports = router;

@@ -729,6 +729,16 @@ router.put('/bookings/:id/status', async (req, res) => {
                 WHERE id = $2 
                 RETURNING *
             `;
+            queryParams = [status, parseInt(id)];
+        } else if (status === 'accepted') {
+            const otpCode = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
+            updateQuery = `
+                UPDATE bookings 
+                SET status = $1, otp = $3
+                WHERE id = $2 
+                RETURNING *
+            `;
+            queryParams = [status, parseInt(id), otpCode];
         } else {
             updateQuery = `
                 UPDATE bookings 
@@ -736,8 +746,8 @@ router.put('/bookings/:id/status', async (req, res) => {
                 WHERE id = $2 
                 RETURNING *
             `;
+            queryParams = [status, parseInt(id)];
         }
-        queryParams = [status, parseInt(id)];
 
         const result = await pool.query(updateQuery, queryParams);
 
@@ -763,6 +773,43 @@ router.put('/bookings/:id/status', async (req, res) => {
             message: 'Failed to update booking status',
             error: error.message
         });
+    }
+});
+// Verify OTP and Start Service
+router.post('/bookings/:id/verify-otp', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { otp } = req.body;
+
+        if (!otp) {
+            return res.status(400).json({ success: false, message: 'OTP is required' });
+        }
+
+        const bookingResult = await pool.query('SELECT * FROM bookings WHERE id = $1', [parseInt(id)]);
+        if (bookingResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Booking not found' });
+        }
+
+        const booking = bookingResult.rows[0];
+
+        if (booking.otp !== otp) {
+            return res.status(400).json({ success: false, message: 'Invalid OTP' });
+        }
+
+        // Update status to in_progress
+        const updateResult = await pool.query(
+            `UPDATE bookings SET status = 'in_progress' WHERE id = $1 RETURNING *`,
+            [parseInt(id)]
+        );
+
+        res.json({
+            success: true,
+            message: 'OTP verified, service started',
+            booking: updateResult.rows[0]
+        });
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 
@@ -804,6 +851,16 @@ router.put('/online-status/:id', async (req, res) => {
     } catch (error) {
         console.error('Error updating online status:', error);
         res.status(500).json({ success: false, message: 'Failed to update online status' });
+    }
+});
+
+// Temporary migration to add OTP to bookings
+router.get('/migrate-tracking', async (req, res) => {
+    try {
+        await pool.query(`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS otp VARCHAR(10)`);
+        res.json({ success: true, message: 'otp column added successfully to bookings' });
+    } catch(e) {
+        res.status(500).json({ error: e.message });
     }
 });
 
