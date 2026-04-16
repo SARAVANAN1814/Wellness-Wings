@@ -178,8 +178,17 @@ router.post('/login', async (req, res) => {
         console.error('Login error:', error);
         res.status(500).json({
             success: false,
-            message: 'Login failed. Please try again.'
+            message: 'Login failed. ' + error.message
         });
+    }
+});
+
+router.get('/debug-schema', async (req, res) => {
+    try {
+        const result = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'volunteer_users'`);
+        res.json({ success: true, columns: result.rows.map(r => r.column_name) });
+    } catch(e) {
+        res.status(500).json({ error: e.message });
     }
 });
 
