@@ -529,7 +529,9 @@ router.get('/requests/:volunteerId', async (req, res) => {
                 b.elderly_id,
                 e.full_name as elderly_name,
                 e.phone_number as elderly_phone,
-                e.address
+                e.address,
+                e.latitude,
+                e.longitude
             FROM bookings b
             JOIN elderly_users e ON b.elderly_id = e.id
             WHERE b.volunteer_id = $1 AND b.status = 'pending'
@@ -607,7 +609,9 @@ router.get('/bookings/:volunteerId', async (req, res) => {
                 b.elderly_id,
                 e.full_name as elderly_name,
                 e.phone_number as elderly_phone,
-                e.address
+                e.address,
+                e.latitude,
+                e.longitude
             FROM bookings b
             JOIN elderly_users e ON b.elderly_id = e.id
             WHERE b.volunteer_id = $1
@@ -648,7 +652,9 @@ router.post('/bookings', async (req, res) => {
             elderly_id,
             service_type,
             description,
-            is_emergency
+            is_emergency,
+            latitude,
+            longitude
         } = req.body;
 
         // Validate required fields
@@ -658,6 +664,19 @@ router.post('/bookings', async (req, res) => {
                 success: false,
                 message: 'Missing required fields'
             });
+        }
+
+        // If latitude and longitude are provided, update the elderly_users table
+        if (latitude !== undefined && longitude !== undefined) {
+            try {
+                await pool.query(
+                    'UPDATE elderly_users SET latitude = $1, longitude = $2 WHERE id = $3',
+                    [latitude, longitude, elderly_id]
+                );
+                console.log('Updated elderly user coordinates:', { elderly_id, latitude, longitude });
+            } catch (err) {
+                console.error('Error updating elderly coordinates:', err);
+            }
         }
 
         // Create the booking record with booking_time

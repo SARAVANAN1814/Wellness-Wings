@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'dart:async';
+import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/api_service.dart';
 import '../widgets/responsive_container.dart';
 
@@ -23,6 +26,13 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
   List<Map<String, dynamic>> _bookings = [];
   List<Map<String, dynamic>> _requests = [];
   String? _error;
+  Timer? _locationTimer;
+
+  @override
+  void dispose() {
+    _locationTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -45,6 +55,7 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
         if (bookingsResult['success'] && requestsResult['success']) {
           _bookings = List<Map<String, dynamic>>.from(bookingsResult['bookings']);
           _requests = List<Map<String, dynamic>>.from(requestsResult['requests']);
+          _checkAndStartBroadcasting();
         } else {
           _error = bookingsResult['message'] ?? requestsResult['message'];
         }
@@ -76,6 +87,44 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
       );
       setState(() { _isLoading = false; });
     }
+  }
+
+  void _checkAndStartBroadcasting() {
+    bool needsBroadcasting = _bookings.any((b) {
+       final status = b['status']?.toString().toUpperCase();
+       return status == 'ACCEPTED' || status == 'IN_PROGRESS';
+    });
+       
+    if (needsBroadcasting && _locationTimer == null) {
+        _startBroadcasting();
+    } else if (!needsBroadcasting && _locationTimer != null) {
+        _locationTimer?.cancel();
+        _locationTimer = null;
+    }
+  }
+
+  Future<void> _startBroadcasting() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return;
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) return;
+    }
+    if (permission == LocationPermission.deniedForever) return;
+    
+    _locationTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
+       try {
+          Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+          await _apiService.updateVolunteerLocation(
+             id: int.parse(widget.volunteerId), 
+             latitude: position.latitude, 
+             longitude: position.longitude
+          );
+       } catch(e) {
+         debugPrint("Error broadcasting location: $e");
+       }
+    });
   }
 
   String _formatBookingDateTime(String? dateTimeStr) {
@@ -453,55 +502,126 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
                   top: BorderSide(color: Colors.grey.shade200),
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Booking ID: #${booking['booking_id']}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Booking ID: #${booking['id'] ?? booking['booking_id']}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      if (isRequest)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextButton(
+                              onPressed: () => _updateBookingStatus((booking['id'] ?? booking['booking_id']).toString(), 'rejected'),
+                              style: TextButton.styleFrom(foregroundColor: Colors.red.shade700),
+                              child: const Text('Reject', style: TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton(
+                              onPressed: () => _updateBookingStatus((booking['id'] ?? booking['booking_id']).toString(), 'accepted'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.teal.shade600,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                              child: const Text('Accept', style: TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                    ],
                   ),
-                  if (isRequest)
+                  if (status == 'ACCEPTED') ...[
+                    const SizedBox(height: 10),
                     Row(
                       children: [
-                        TextButton(
-                          onPressed: () => _updateBookingStatus(booking['booking_id'].toString(), 'rejected'),
-                          style: TextButton.styleFrom(foregroundColor: Colors.red.shade700),
-                          child: const Text('Reject', style: TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          onPressed: () => _updateBookingStatus(booking['booking_id'].toString(), 'accepted'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal.shade600,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => _showTrackingMap(context, booking),
+                            icon: Icon(Icons.map_rounded, size: 18, color: Colors.teal.shade700),
+                            label: Text('Navigate', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal.shade700)),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.teal.shade300),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
                           ),
-                          child: const Text('Accept', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => _showOtpVerificationDialog(context, booking),
+                            icon: const Icon(Icons.lock_person_rounded, size: 18),
+                            label: const Text('Enter OTP', style: TextStyle(fontWeight: FontWeight.bold)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal.shade600,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
                         ),
                       ],
-                    )
-                  else if (status == 'ACCEPTED')
-                    ElevatedButton.icon(
-                      onPressed: () => _showPaymentQR(context, booking),
-                      icon: const Icon(Icons.qr_code_scanner_rounded, size: 18),
-                      label: const Text(
-                        'Payment QR',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal.shade600,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () => _showPaymentQR(context, booking),
+                        icon: Icon(Icons.qr_code_scanner_rounded, size: 18, color: Colors.deepPurple.shade600),
+                        label: Text('Payment QR', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple.shade600)),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.deepPurple.shade200),
+                          backgroundColor: Colors.deepPurple.shade50,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                       ),
                     ),
+                  ],
+                  if (status == 'IN_PROGRESS') ...[
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => _showTrackingMap(context, booking),
+                            icon: Icon(Icons.map_rounded, size: 18, color: Colors.teal.shade700),
+                            label: Text('View Map', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal.shade700)),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.teal.shade300),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => _showPaymentQR(context, booking),
+                            icon: const Icon(Icons.qr_code_scanner_rounded, size: 18),
+                            label: const Text('Payment QR', style: TextStyle(fontWeight: FontWeight.bold)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal.shade600,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -630,7 +750,7 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
                     ],
                   ),
                   child: QrImageView(
-                    data: 'WW_SERVICE_${booking['booking_id']}',  // Simple QR data
+                    data: 'WW_SERVICE_${booking['id'] ?? booking['booking_id']}',  // Simple QR data
                     version: QrVersions.auto,
                     size: 200.0,
                     backgroundColor: Colors.white,
@@ -655,7 +775,7 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
                       );
                       
                       final result = await _apiService.updateBookingStatus(
-                        bookingId: booking['booking_id'].toString(),
+                        bookingId: (booking['id'] ?? booking['booking_id']).toString(),
                         status: 'completed'
                       );
                       
@@ -802,4 +922,187 @@ class _VolunteerBookingsPageState extends State<VolunteerBookingsPage> {
       ),
     );
   }
-} 
+
+  void _showOtpVerificationDialog(BuildContext outerContext, Map<String, dynamic> booking) {
+    final otpController = TextEditingController();
+    showDialog(
+      context: outerContext,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text('Verify Service OTP', style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Enter the 4-digit OTP provided by the elderly person to start the service.', style: TextStyle(fontSize: 15)),
+              const SizedBox(height: 20),
+              TextField(
+                controller: otpController,
+                keyboardType: TextInputType.number,
+                maxLength: 4,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
+                decoration: InputDecoration(
+                  hintText: '0000',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final otp = otpController.text.trim();
+                if (otp.length != 4) {
+                   ScaffoldMessenger.of(outerContext).showSnackBar(const SnackBar(content: Text('Please enter a 4-digit OTP')));
+                   return;
+                }
+                Navigator.pop(dialogContext); // close dialog
+                
+                showDialog(
+                  context: outerContext,
+                  barrierDismissible: false,
+                  builder: (loadingCtx) => const Center(child: CircularProgressIndicator()),
+                );
+                
+                final result = await _apiService.verifyServiceOtp(int.parse((booking['id'] ?? booking['booking_id']).toString()), otp);
+                
+                if (!mounted) return;
+                Navigator.of(outerContext).pop(); // close progress indicator
+                
+                if (result['success']) {
+                   ScaffoldMessenger.of(outerContext).showSnackBar(const SnackBar(content: Text('OTP verified, and you have been matched with the respective user, start your service'), backgroundColor: Colors.green));
+                   _loadData();
+                } else {
+                   ScaffoldMessenger.of(outerContext).showSnackBar(SnackBar(content: Text(result['message'] ?? 'Invalid OTP'), backgroundColor: Colors.red));
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.teal, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+              child: const Text('Verify & Start'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showTrackingMap(BuildContext context, Map<String, dynamic> booking) async {
+    final elderlyId = booking['elderly_id'];
+    String address = booking['address']?.toString() ?? '';
+
+    if (elderlyId == null && address.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No location data available for this user'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const Center(child: CircularProgressIndicator()),
+    );
+
+    double? elderlyLat;
+    double? elderlyLng;
+    double? volunteerLat;
+    double? volunteerLng;
+
+    try {
+      // 1. Fetch elderly user's LIVE location from the backend
+      if (elderlyId != null) {
+        final result = await _apiService.getElderlyLiveLocation(
+          int.parse(elderlyId.toString()),
+        );
+        if (result['success'] == true) {
+          elderlyLat = double.tryParse(result['latitude']?.toString() ?? '');
+          elderlyLng = double.tryParse(result['longitude']?.toString() ?? '');
+          if (result['address'] != null && result['address'].toString().isNotEmpty) {
+            address = result['address'].toString();
+          }
+        }
+      }
+
+      // 2. Get volunteer's own current GPS position
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        final pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
+        volunteerLat = pos.latitude;
+        volunteerLng = pos.longitude;
+      }
+    } catch (e) {
+      debugPrint('Error fetching locations: $e');
+    }
+
+    // Hide loading indicator
+    if (context.mounted) Navigator.pop(context);
+
+    // Build destination string
+    String destination;
+    if (elderlyLat != null && elderlyLng != null) {
+      destination = '$elderlyLat,$elderlyLng';
+    } else if (address.isNotEmpty) {
+      destination = address;
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not determine elderly user\'s location.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Build origin string (volunteer's live position)
+    String? origin;
+    if (volunteerLat != null && volunteerLng != null) {
+      origin = '$volunteerLat,$volunteerLng';
+    }
+
+    try {
+      // Use Google Maps Directions URL with origin + destination
+      // This shows the full route with distance between both points
+      Uri url;
+      if (origin != null) {
+        // Full directions: origin (volunteer) → destination (elderly live location)
+        url = Uri.parse(
+          'https://www.google.com/maps/dir/?api=1'
+          '&origin=$origin'
+          '&destination=${Uri.encodeComponent(destination)}'
+          '&travelmode=driving',
+        );
+      } else {
+        // No volunteer GPS available, just show destination
+        url = Uri.parse(
+          'https://www.google.com/maps/dir/?api=1'
+          '&destination=${Uri.encodeComponent(destination)}'
+          '&travelmode=driving',
+        );
+      }
+
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to launch Google Maps.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+}

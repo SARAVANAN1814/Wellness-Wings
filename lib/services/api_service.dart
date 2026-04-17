@@ -169,6 +169,47 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getElderlyLiveLocation(int elderlyId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/elderly/live-location/$elderlyId'),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error'};
+    }
+  }
+
+  Future<Map<String, dynamic>> getElderlyActiveBooking(String elderlyId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/elderly/active-booking/$elderlyId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return {'success': false, 'message': 'Failed to fetch active booking'};
+    } catch (e) {
+      print('Error fetching active booking: $e');
+      return {'success': false, 'message': 'Connection error'};
+    }
+  }
+
+  Future<Map<String, dynamic>> verifyServiceOtp(int bookingId, String otp) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/volunteer/bookings/$bookingId/verify-otp'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'otp': otp}),
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      print('Error verifying OTP: $e');
+      return {'success': false, 'message': 'Connection error'};
+    }
+  }
+
   Future<Map<String, dynamic>> registerElderly({
     required String fullName,
     required String gender,
@@ -649,18 +690,25 @@ class ApiService {
     required String serviceType,
     required String description,
     required bool isEmergency,
+    double? latitude,
+    double? longitude,
   }) async {
     try {
+      final body = {
+        'volunteer_id': volunteerId,
+        'elderly_id': elderlyDetails['id'].toString(),
+        'service_type': serviceType,
+        'description': description,
+        'is_emergency': isEmergency,
+      };
+      if (latitude != null && longitude != null) {
+        body['latitude'] = latitude;
+        body['longitude'] = longitude;
+      }
       final response = await http.post(
         Uri.parse('$baseUrl/volunteer/bookings'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'volunteer_id': volunteerId,
-          'elderly_id': elderlyDetails['id'].toString(),
-          'service_type': serviceType,
-          'description': description,
-          'is_emergency': isEmergency,
-        }),
+        body: jsonEncode(body),
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
@@ -994,7 +1042,7 @@ class ApiService {
     String? type,
   }) async {
     try {
-      String url = '$baseUrl/notifications/$guardianId';
+      String url = '$baseUrl/guardian/notifications/$guardianId';
       List<String> params = [];
       if (since != null) params.add('since=$since');
       if (type != null && type != 'all') params.add('type=$type');
@@ -1012,7 +1060,7 @@ class ApiService {
   Future<Map<String, dynamic>> getNotificationCount({required int guardianId}) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/notifications/count/$guardianId'),
+        Uri.parse('$baseUrl/guardian/notifications-count/$guardianId'),
         headers: {'Content-Type': 'application/json'},
       );
       return jsonDecode(response.body);
@@ -1026,13 +1074,9 @@ class ApiService {
     required int bookingId,
   }) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/notifications/mark-read'),
+      final response = await http.put(
+        Uri.parse('$baseUrl/guardian/notifications/$guardianId/read/$bookingId'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'guardianId': guardianId,
-          'bookingId': bookingId,
-        }),
       );
       return jsonDecode(response.body);
     } catch (e) {
@@ -1044,12 +1088,9 @@ class ApiService {
     required int guardianId,
   }) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/notifications/mark-all-read'),
+      final response = await http.put(
+        Uri.parse('$baseUrl/guardian/notifications/$guardianId/read-all'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'guardianId': guardianId,
-        }),
       );
       return jsonDecode(response.body);
     } catch (e) {

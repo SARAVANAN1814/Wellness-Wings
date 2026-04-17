@@ -49,7 +49,6 @@ class WellnessWingsApp extends StatelessWidget {
         '/guardian_login': (context) => const GuardianLoginPage(),
         '/elderly_login': (context) => const ElderlyLoginPage(),
         '/elderly_register': (context) => const ElderlyRegistrationPage(),
-        '/elderly_purpose_selection': (context) => const ElderlyPurposeSelectionPage(),
         '/volunteer_login': (context) => const VolunteerLoginPage(),
         '/volunteer_register': (context) => const VolunteerRegistrationPage(),
         '/booking_confirmation': (context) => const BookingConfirmationPage(
@@ -104,6 +103,13 @@ class WellnessWingsApp extends StatelessWidget {
           return MaterialPageRoute(
             builder: (context) => GuardianProfilePage(
               guardianData: args,
+            ),
+          );
+        } else if (settings.name == '/elderly_purpose_selection') {
+          final args = settings.arguments as Map<String, dynamic>?;
+          return MaterialPageRoute(
+            builder: (context) => ElderlyPurposeSelectionPage(
+              elderlyData: args,
             ),
           );
         }

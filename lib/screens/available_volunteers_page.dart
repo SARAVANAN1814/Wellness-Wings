@@ -15,12 +15,14 @@ class AvailableVolunteersPage extends StatefulWidget {
   final String serviceType;
   final bool isEmergency;
   final String description;
+  final Map<String, dynamic>? elderlyData;
 
   const AvailableVolunteersPage({
     super.key,
     required this.serviceType,
     required this.isEmergency,
     required this.description,
+    this.elderlyData,
   });
 
   @override
@@ -42,6 +44,13 @@ class _AvailableVolunteersPageState extends State<AvailableVolunteersPage> {
   }
 
   Future<void> _loadElderlyDetails() async {
+    if (widget.elderlyData != null) {
+      setState(() {
+        _elderlyDetails = widget.elderlyData;
+      });
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final elderlyDetailsStr = prefs.getString('elderly_details');
     if (elderlyDetailsStr != null) {
@@ -270,12 +279,21 @@ Thank you.''';
     try {
       setState(() { _isLoading = true; });
 
+      Position? currentPosition;
+      try {
+        currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      } catch (e) {
+        debugPrint('Failed to get location for booking: $e');
+      }
+
       final bookingResult = await _apiService.createBooking(
         volunteerId: volunteer['id'].toString(),
         elderlyDetails: _elderlyDetails!,
         serviceType: widget.serviceType,
         description: message,
         isEmergency: widget.isEmergency,
+        latitude: currentPosition?.latitude,
+        longitude: currentPosition?.longitude,
       );
 
       if (!bookingResult['success']) {

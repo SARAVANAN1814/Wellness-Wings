@@ -289,4 +289,22 @@ router.get('/active-booking/:id', async (req, res) => {
     }
 });
 
+// Get live location of an elderly user (called by volunteer)
+router.get('/live-location/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query(
+            'SELECT latitude, longitude, address FROM elderly_users WHERE id = $1',
+            [id]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        res.json({ success: true, ...result.rows[0] });
+    } catch (error) {
+        console.error('Error fetching elderly live location:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 module.exports = router;

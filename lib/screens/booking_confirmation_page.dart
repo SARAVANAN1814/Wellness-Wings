@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'elderly_purpose_selection_page.dart';
 
 class BookingConfirmationPage extends StatelessWidget {
   final Map<String, dynamic> volunteerDetails;
@@ -158,7 +159,12 @@ class BookingConfirmationPage extends StatelessWidget {
               const SizedBox(height: 16),
               TextButton.icon(
                 onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (context) => const ElderlyPurposeSelectionPage(),
+                    ),
+                    (route) => false,
+                  );
                 },
                 icon: Icon(
                   Icons.home_rounded,

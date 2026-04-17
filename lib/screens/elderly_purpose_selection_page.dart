@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'available_volunteers_page.dart';
 import 'elderly_edit_profile_page.dart';
+import 'dart:async';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
+import '../services/api_service.dart';
 
 class ElderlyPurposeSelectionPage extends StatefulWidget {
-  const ElderlyPurposeSelectionPage({super.key});
+  final Map<String, dynamic>? elderlyData;
+  const ElderlyPurposeSelectionPage({super.key, this.elderlyData});
 
   @override
   State<ElderlyPurposeSelectionPage> createState() => _ElderlyPurposeSelectionPageState();
@@ -15,11 +21,87 @@ class ElderlyPurposeSelectionPage extends StatefulWidget {
 class _ElderlyPurposeSelectionPageState extends State<ElderlyPurposeSelectionPage> {
   final _descriptionController = TextEditingController();
   Map<String, dynamic>? _elderlyDetails;
+  
+  Map<String, dynamic>? _activeBooking;
+  bool _isLoadingActiveBooking = true;
+  Timer? _pollingTimer;
+  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
-    _loadElderlyDetails();
+    if (widget.elderlyData != null) {
+      _elderlyDetails = widget.elderlyData;
+      _startPollingActiveBooking();
+    } else {
+      _loadElderlyDetails().then((_) {
+        _startPollingActiveBooking();
+      });
+    }
+  }
+
+  void _startPollingActiveBooking() {
+    _pollActiveBooking();
+    _pushLiveLocation(); // Push GPS immediately on start
+    _pollingTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      _pollActiveBooking();
+      _pushLiveLocation(); // Push GPS every 10 seconds
+    });
+  }
+
+  /// Continuously push the elderly user's current GPS to the backend
+  /// so the volunteer gets truly live coordinates, not stale login-time ones.
+  Future<void> _pushLiveLocation() async {
+    if (_elderlyDetails == null || !mounted) return;
+    final elderlyId = _elderlyDetails!['id'];
+    if (elderlyId == null) return;
+
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
+        await _apiService.updateElderlyLocation(
+          id: int.parse(elderlyId.toString()),
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+        debugPrint('📍 Elderly live location pushed: ${position.latitude}, ${position.longitude}');
+      }
+    } catch (e) {
+      debugPrint('Error pushing elderly live location: $e');
+    }
+  }
+
+  Future<void> _pollActiveBooking() async {
+    if (_elderlyDetails == null || !mounted) return;
+    
+    final elderlyId = _elderlyDetails!['id']?.toString();
+    if (elderlyId == null) return;
+
+    final response = await _apiService.getElderlyActiveBooking(elderlyId);
+    if (mounted) {
+      if (response['success'] == true && response['hasActiveBooking'] == true) {
+        setState(() {
+          _activeBooking = response['booking'];
+          _isLoadingActiveBooking = false;
+        });
+      } else {
+        setState(() {
+          _activeBooking = null;
+          _isLoadingActiveBooking = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    _pollingTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadElderlyDetails() async {
@@ -129,10 +211,13 @@ class _ElderlyPurposeSelectionPageState extends State<ElderlyPurposeSelectionPag
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [Colors.teal.shade100, Colors.white],
-            stops: const [0.0, 0.4],
           ),
         ),
-        child: Center(
+        child: _isLoadingActiveBooking 
+          ? const Center(child: CircularProgressIndicator())
+          : _activeBooking != null 
+              ? _buildActiveBookingDashboard()
+              : Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: ResponsiveContainer(
@@ -187,7 +272,8 @@ class _ElderlyPurposeSelectionPageState extends State<ElderlyPurposeSelectionPag
         builder: (context) => AvailableVolunteersPage(
           serviceType: serviceType,
           isEmergency: isEmergency,
-          description: description ?? '', // Provide empty string as default
+          description: description ?? '',
+          elderlyData: _elderlyDetails,
         ),
       ),
     );
@@ -419,10 +505,184 @@ class _ElderlyPurposeSelectionPageState extends State<ElderlyPurposeSelectionPag
     );
   }
 
-  @override
-  void dispose() {
-    _descriptionController.dispose();
-    super.dispose();
+
+  Widget _buildActiveBookingDashboard() {
+    final status = _activeBooking!['status'];
+    final otp = _activeBooking!['otp'] ?? '0000';
+    final volunteerName = _activeBooking!['volunteer_name'] ?? 'Volunteer';
+    final volunteerPhone = _activeBooking!['volunteer_phone'] ?? 'N/A';
+    
+    final volLat = _activeBooking!['volunteer_lat'];
+    final volLng = _activeBooking!['volunteer_lng'];
+
+    final eLat = _elderlyDetails!['latitude'];
+    final eLng = _elderlyDetails!['longitude'];
+
+    final hasVolLocation = volLat != null && volLng != null;
+    final hasELocation = eLat != null && eLng != null;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: ResponsiveContainer(
+        maxWidth: 800,
+        child: Column(
+          children: [
+            const Text(
+              'Current Active Service',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.teal,
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            // Volunteer Info Card
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.teal.shade100,
+                      backgroundImage: _activeBooking!['volunteer_photo'] != null
+                          ? MemoryImage(base64Decode(_activeBooking!['volunteer_photo']))
+                          : null,
+                      child: _activeBooking!['volunteer_photo'] == null
+                          ? Icon(Icons.person, size: 40, color: Colors.teal.shade700)
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      volunteerName,
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Service: ${_activeBooking!['service_type']}',
+                      style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // OTP Code Section
+            if (status == 'accepted') 
+              Card(
+                elevation: 4,
+                color: Colors.teal.shade50,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.lock_person_rounded, size: 48, color: Colors.teal),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Share this OTP with your volunteer upon arrival to start the service.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.teal.shade700,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          otp,
+                          style: const TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 8,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
+            if (status == 'in_progress')
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green),
+                    SizedBox(width: 12),
+                    Text(
+                      'Service is currently in progress',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
+                    ),
+                  ],
+                ),
+              ),
+
+            const SizedBox(height: 24),
+            
+            // Map Tracking Section
+            if (hasVolLocation)
+              Container(
+                height: 300,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: FlutterMap(
+                    options: MapOptions(
+                      initialCenter: LatLng(
+                        double.parse(volLat.toString()), 
+                        double.parse(volLng.toString())
+                      ),
+                      initialZoom: 15,
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.example.wellness_wings',
+                      ),
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: LatLng(double.parse(volLat.toString()), double.parse(volLng.toString())),
+                            width: 60,
+                            height: 60,
+                            child: const Icon(Icons.location_on, size: 50, color: Colors.red),
+                          ),
+                          if (hasELocation)
+                            Marker(
+                              point: LatLng(double.parse(eLat.toString()), double.parse(eLng.toString())),
+                              width: 60,
+                              height: 60,
+                              child: const Icon(Icons.home, size: 50, color: Colors.blue),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
-} 
+}
 

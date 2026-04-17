@@ -108,7 +108,7 @@ class _GuardianBookingsPageState extends State<GuardianBookingsPage> {
     if (volunteerId != null) {
       ZegoUIKitPrebuiltCallInvitationService().send(
         invitees: [ZegoCallUser('volunteer_$volunteerId', volunteerName)],
-        isVideoCall: true,
+        isVideoCall: false,
       );
     }
   }
@@ -579,7 +579,7 @@ class _GuardianBookingsPageState extends State<GuardianBookingsPage> {
                 children: [
                   if (isActive) ...[
                     _buildActionButton(Icons.location_on, 'Track', Colors.blue.shade700, () => _trackVolunteer(booking)),
-                    _buildActionButton(Icons.video_call, 'Video Call', Colors.green.shade700, () => _videoCallVolunteer(booking)),
+                    _buildActionButton(Icons.phone_rounded, 'Call', Colors.green.shade700, () => _videoCallVolunteer(booking)),
                     _buildActionButton(Icons.cancel_outlined, 'Cancel', Colors.red.shade700, () => _cancelBooking(booking)),
                   ],
                   if (isCompleted)

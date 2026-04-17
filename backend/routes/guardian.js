@@ -633,5 +633,74 @@ router.post('/emergency-booking', async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to create emergency booking' });
     }
 });
+// Get Guardian Notifications
+router.get('/notifications/:guardianId', async (req, res) => {
+    try {
+        const { guardianId } = req.params;
+        const { type } = req.query; // 'all', 'emergency', 'booking'
+        
+        let query = 'SELECT * FROM guardian_notifications WHERE guardian_id = $1';
+        let values = [guardianId];
+
+        if (type && type !== 'all') {
+            if (type === 'emergency') {
+                query += ' AND is_emergency = true';
+            } else if (type === 'booking') {
+                query += ' AND is_emergency = false';
+            }
+        }
+        
+        query += ' ORDER BY created_at DESC LIMIT 50';
+
+        const result = await pool.query(query, values);
+        res.json({ success: true, notifications: result.rows });
+    } catch (error) {
+        console.error('Fetch notifications error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Get Notification Count
+router.get('/notifications-count/:guardianId', async (req, res) => {
+    try {
+        const { guardianId } = req.params;
+        const result = await pool.query(
+            'SELECT COUNT(*) as count FROM guardian_notifications WHERE guardian_id = $1 AND is_read = false',
+            [guardianId]
+        );
+        res.json({ success: true, count: parseInt(result.rows[0].count) });
+    } catch (error) {
+        console.error('Notification count error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Mark Notification as read
+router.put('/notifications/:guardianId/read/:bookingId', async (req, res) => {
+    try {
+        const { guardianId, bookingId } = req.params;
+        await pool.query(
+            'UPDATE guardian_notifications SET is_read = true WHERE guardian_id = $1 AND booking_id = $2',
+            [guardianId, bookingId]
+        );
+        res.json({ success: true, message: 'Marked as read' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Mark All as read
+router.put('/notifications/:guardianId/read-all', async (req, res) => {
+    try {
+        const { guardianId } = req.params;
+        await pool.query(
+            'UPDATE guardian_notifications SET is_read = true WHERE guardian_id = $1',
+            [guardianId]
+        );
+        res.json({ success: true, message: 'All marked as read' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
 
 module.exports = router;
