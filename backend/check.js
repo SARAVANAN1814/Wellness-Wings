@@ -1,0 +1,1 @@
+const pool = require('./config/database'); pool.query("SELECT id, email FROM volunteer_users").then(res => { console.log(res.rows); process.exit(0); }).catch(e => { console.error(e); process.exit(1); });
